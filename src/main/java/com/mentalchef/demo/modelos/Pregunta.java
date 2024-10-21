@@ -1,6 +1,7 @@
 package com.mentalchef.demo.modelos;
 
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -33,17 +34,20 @@ public class Pregunta {
     private String curiosidad;
 
     @Column(name = "imagen")
-    private byte[] imagen;
+    private String imagen;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
+    @OneToMany(mappedBy = "pregunta", cascade = CascadeType.ALL)
+    private List<Respuesta> respuestas;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    public Pregunta(String pregunta, Dificultad dificultad, boolean verificado, String curiosidad, byte[] imagen,
+    public Pregunta(String pregunta, Dificultad dificultad, boolean verificado, String curiosidad, String imagen,
             Categoria categoria, Usuario usuario) {
         this.pregunta = pregunta;
         this.dificultad = dificultad;

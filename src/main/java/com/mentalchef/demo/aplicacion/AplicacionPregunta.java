@@ -62,10 +62,18 @@ public class AplicacionPregunta implements IAplicacionPregunta {
     }
 
     @Override
-    public Pregunta getPreguntaAlAzar() {
-        
+    public Pregunta getPreguntaDiariaAlAzar() {
+        return persistencia.obtenerPreguntaConRespuestasAleatoriaDiaria();
     }
 
+    @Override
+    public List<Pregunta> getPreguntaByCategoria(String categoria) {
+        return persistencia.obtenerPreguntasPorCategoria(categoria);
+    }
 
+    @Override
+    public Pregunta getPreguntaAlAzar() {
+        return persistencia.obtenerPreguntaConRespuestasAleatoria();
+    }
 
 }

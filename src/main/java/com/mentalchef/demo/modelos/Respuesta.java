@@ -49,6 +49,10 @@ public class Respuesta {
         this.usuario = usuario;
     }
 
+    public Respuesta(String respuesta) {
+        this.respuesta = respuesta;
+    }
+
 
 
 

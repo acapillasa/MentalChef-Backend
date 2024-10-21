@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mentalchef.demo.aplicacion.IAplicacionPregunta;
+import com.mentalchef.demo.dto.PreguntaDto;
+import com.mentalchef.demo.dto.PreguntaDtoConverter;
 import com.mentalchef.demo.modelos.Pregunta;
 
 import lombok.AllArgsConstructor;
+
 
 
 @RestController
@@ -20,6 +23,8 @@ import lombok.AllArgsConstructor;
 public class PreguntaController {
 
     IAplicacionPregunta aplicacionPregunta;
+
+    PreguntaDtoConverter preguntaDtoConverter;
 
     @GetMapping("")
     public List<Pregunta> getpreguntas() {
@@ -40,5 +45,17 @@ public class PreguntaController {
             return "Error al eleiminar pregunta";
         }
     }
+
+    @GetMapping("/diaria")
+    public Pregunta getPreguntadiaria() {
+        return aplicacionPregunta.getPreguntaDiariaAlAzar();
+    }
+
+    @GetMapping("/alAzar")
+    public PreguntaDto getPreguntaAlAzar() {
+        Pregunta pregunta = aplicacionPregunta.getPreguntaAlAzar();
+        return preguntaDtoConverter.convertToPreguntaDto(pregunta);
+    }
+    
 
 }

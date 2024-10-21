@@ -12,7 +12,9 @@ public interface IAplicacionCategorias {
 
     public String insertCategoria(Categoria Categoria);
 
-    public List<Categoria> getCategoriaByName(String categoria);
+    public List<Categoria> getListCategoriaByName(String categoria);
 
     public void deleteCategoriaById(int id);
+
+    public Categoria getCategoriaByName(String categoria);
 }

@@ -47,7 +47,7 @@ public class AplicacionCategorias implements IAplicacionCategorias {
     }
 
     @Override
-    public List<Categoria> getCategoriaByName(String categoria) {
+    public List<Categoria> getListCategoriaByName(String categoria) {
         try {
             return persistencia.obtenerPorNombre(categoria);
         } catch (Exception e) {
@@ -59,6 +59,11 @@ public class AplicacionCategorias implements IAplicacionCategorias {
     @Override
     public void deleteCategoriaById(int id) {
         persistencia.eliminar(persistencia.obtener(id));
+    }
+
+    @Override
+    public Categoria getCategoriaByName(String categoria) {
+        return persistencia.obtenerCategoriaPorNombre(categoria);
     }
 
 }

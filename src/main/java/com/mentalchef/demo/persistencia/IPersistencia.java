@@ -2,8 +2,10 @@ package com.mentalchef.demo.persistencia;
 
 import java.util.List;
 
+import com.mentalchef.demo.modelos.Categoria;
 import com.mentalchef.demo.modelos.Comentario;
 import com.mentalchef.demo.modelos.Pregunta;
+import com.mentalchef.demo.modelos.Respuesta;
 
 public interface IPersistencia<T> {
 
@@ -25,5 +27,12 @@ public interface IPersistencia<T> {
 
     public List<Comentario> obtenerComentariosPorUsuario(Long usuarioId);
 
+    public Pregunta obtenerPreguntaConRespuestasAleatoriaDiaria();
+
     public Pregunta obtenerPreguntaConRespuestasAleatoria();
+
+    public List<Pregunta> obtenerPreguntasPorCategoria(String nombreCategoria);
+
+    public Categoria obtenerCategoriaPorNombre(String categoria);
+
 }

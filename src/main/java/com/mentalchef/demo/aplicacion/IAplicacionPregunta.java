@@ -16,5 +16,9 @@ public interface IAplicacionPregunta {
 
     public void deletePreguntaById(int id);
 
+    public Pregunta getPreguntaDiariaAlAzar();
+
     public Pregunta getPreguntaAlAzar();
+
+    public List<Pregunta> getPreguntaByCategoria(String categoria);
 }
