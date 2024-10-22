@@ -1,6 +1,6 @@
 package com.mentalchef.demo.controllers;
 
-import java.util.List;
+import java.util.*;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mentalchef.demo.aplicacion.IAplicacionCategorias;
+import com.mentalchef.demo.dto.CategoriaDto;
+import com.mentalchef.demo.dto.CategoriaDtoConverter;
 import com.mentalchef.demo.modelos.Categoria;
 
 import lombok.AllArgsConstructor;
-
 
 @RestController
 @AllArgsConstructor
@@ -21,9 +22,17 @@ public class CategoriaController {
 
     IAplicacionCategorias aplicacionCategorias;
 
+    CategoriaDtoConverter categoriaDtoConverter;
+
     @GetMapping("")
-    public List<Categoria> getCategorias() {
-        return aplicacionCategorias.getCategorias();
+    public List<CategoriaDto> getCategorias() {
+
+        List<CategoriaDto> listaDto = new ArrayList<>();
+        for (Categoria categoriaDto : aplicacionCategorias.getCategorias()) {
+
+            listaDto.add(categoriaDtoConverter.convertToCategoriaDto(categoriaDto));
+        }
+        return listaDto;
     }
 
     @PostMapping("/insertar")

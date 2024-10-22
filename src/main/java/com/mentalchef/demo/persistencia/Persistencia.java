@@ -225,19 +225,35 @@ public class Persistencia<T> implements IPersistencia<T> {
         try {
             sesion.beginTransaction();
 
-            String hqlPregunta = "FROM Pregunta p ORDER BY RAND()";
+            // Verifica si hay preguntas disponibles
+            String countHql = "SELECT COUNT(p) FROM Pregunta p";
+            Long totalPreguntas = sesion.createQuery(countHql, Long.class).uniqueResult();
+
+            if (totalPreguntas == 0) {
+                System.out.println("No hay preguntas disponibles en la base de datos.");
+                sesion.getTransaction().commit();
+                return null;
+            }
+
+            // Si hay preguntas, selecciona una al azar
+            String hqlPregunta = "FROM Pregunta p JOIN FETCH p.respuestas ORDER BY RAND()";
             Pregunta pregunta = sesion.createQuery(hqlPregunta, Pregunta.class)
                     .setMaxResults(1)
                     .uniqueResult();
 
-            if (pregunta != null) {
-                Hibernate.initialize(pregunta.getRespuestas());
+            // Verificación adicional para asegurarse de que la pregunta no sea nula
+            if (pregunta == null) {
+                System.out.println("La consulta aleatoria no devolvió una pregunta.");
+            } else {
+                System.out.println("Pregunta obtenida: " + pregunta.getId());
             }
 
             sesion.getTransaction().commit();
             return pregunta;
         } catch (Exception e) {
-            sesion.getTransaction().rollback();
+            if (sesion.getTransaction() != null) {
+                sesion.getTransaction().rollback();
+            }
             e.printStackTrace();
             return null;
         }
