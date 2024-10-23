@@ -1,5 +1,6 @@
 package com.mentalchef.demo.modelos;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class Pregunta {
     private Categoria categoria;
 
     @OneToMany(mappedBy = "pregunta", cascade = CascadeType.ALL)
-    private List<Respuesta> respuestas;
+    private List<Respuesta> respuestas = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")

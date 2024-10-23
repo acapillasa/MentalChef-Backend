@@ -7,15 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.mentalchef.demo.aplicacion.AplicacionCategorias;
+import com.mentalchef.demo.aplicacion.AplicacionUsuarios;
 import com.mentalchef.demo.modelos.Dificultad;
 import com.mentalchef.demo.modelos.Pregunta;
-import com.mentalchef.demo.modelos.Respuesta;
 
 @Component
 public class PreguntaDtoConverter {
 
     @Autowired
     private AplicacionCategorias aplicacionCategorias;
+
+    @Autowired
+    private AplicacionUsuarios aplicacionUsuarios;
 
     public static PreguntaDto convertToPreguntaDto(Pregunta pregunta) {
         PreguntaDto preguntaDto = new PreguntaDto();
@@ -43,25 +46,13 @@ public class PreguntaDtoConverter {
 
     public Pregunta convertToPregunta(PreguntaDto preguntaDto) {
         Pregunta pregunta = new Pregunta();
-        pregunta.setId(preguntaDto.getId());
         pregunta.setPregunta(preguntaDto.getPregunta());
         pregunta.setDificultad(Dificultad.valueOf(preguntaDto.getDificultad()));
         pregunta.setVerificado(preguntaDto.isVerificado());
         pregunta.setCuriosidad(preguntaDto.getCuriosidad());
         pregunta.setImagen(preguntaDto.getImagen());
         pregunta.setCategoria(aplicacionCategorias.getCategoriaByName(preguntaDto.getCategoria()));
-
-        List<Respuesta> respuestas = preguntaDto.getRespuestas().stream()
-                .map(respuestaDto -> {
-                    Respuesta respuesta = new Respuesta();
-                    respuesta.setRespuesta(respuestaDto.getRespuesta());
-                    respuesta.setCorrecta(respuestaDto.isCorrecta());
-                    respuesta.setPregunta(pregunta);
-                    return respuesta;
-                })
-                .collect(Collectors.toList());
-
-        pregunta.setRespuestas(respuestas);
+        pregunta.setUsuario(aplicacionUsuarios.getUsuario(preguntaDto.getUsuario()));
 
         return pregunta;
     }

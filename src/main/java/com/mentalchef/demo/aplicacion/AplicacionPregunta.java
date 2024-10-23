@@ -36,13 +36,13 @@ public class AplicacionPregunta implements IAplicacionPregunta {
     }
 
     @Override
-    public String insertPregunta(Pregunta Pregunta) {
+    public Pregunta insertPregunta(Pregunta pregunta) {
         try {
-            persistencia.guardar(Pregunta);
-            return "Pregunta insertada con éxito";
+            persistencia.guardar(pregunta);
+            return pregunta;
         } catch (Exception e) {
             System.err.println("Error al insertar la pregunta: " + e.getMessage());
-            return "Error al insertar la pregunta: " + e.getMessage();
+            return new Pregunta();
         }
     }
 

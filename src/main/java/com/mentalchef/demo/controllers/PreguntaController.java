@@ -2,9 +2,11 @@ package com.mentalchef.demo.controllers;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,8 +34,12 @@ public class PreguntaController {
     }
 
     @PostMapping("/insertar")
-    public String insertarPregunta(Pregunta pregunta) {
-        return aplicacionPregunta.insertPregunta(pregunta);
+    public ResponseEntity<PreguntaDto> insertarPregunta(@RequestBody PreguntaDto preguntaDto) {
+        Pregunta nuevaPregunta = aplicacionPregunta.insertPregunta(preguntaDtoConverter.convertToPregunta(preguntaDto));
+
+        PreguntaDto resultadoDto = preguntaDtoConverter.convertToPreguntaDto(nuevaPregunta);
+
+        return ResponseEntity.ok(resultadoDto);
     }
 
     @DeleteMapping("eliminar/{id}")
@@ -42,7 +48,7 @@ public class PreguntaController {
             aplicacionPregunta.deletePreguntaById(id);
             return "Pregunta eliminada con exito";
         } catch (Exception e) {
-            return "Error al eleiminar pregunta";
+            return "Error al eliminar pregunta";
         }
     }
 
