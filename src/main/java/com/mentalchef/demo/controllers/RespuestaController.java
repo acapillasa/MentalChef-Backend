@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mentalchef.demo.aplicacion.IAplicacionPregunta;
 import com.mentalchef.demo.aplicacion.IAplicacionRespuestas;
 import com.mentalchef.demo.dto.PreguntaDto;
 import com.mentalchef.demo.dto.PreguntaDtoConverter;
@@ -19,6 +20,8 @@ import com.mentalchef.demo.modelos.Pregunta;
 import com.mentalchef.demo.modelos.Respuesta;
 
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @AllArgsConstructor
@@ -26,6 +29,8 @@ import lombok.AllArgsConstructor;
 public class RespuestaController {
 
     IAplicacionRespuestas aplicacionRespuestas;
+
+    IAplicacionPregunta aplicacionPreguntas;
 
     RespuestaDtoConverter respuestaDtoConverter;
 
@@ -40,6 +45,51 @@ public class RespuestaController {
             aplicacionRespuestas.insertRespuesta(respuestaDtoConverter.convertToRespuesta(respuestaDto));
         }
         return ResponseEntity.ok("Respuestas insertadas con éxito");
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<Pregunta> actualizarRespuestas(@PathVariable Long id,
+            @RequestBody List<Respuesta> respuestasActualizadas) {
+        // Buscar la pregunta existente por su ID
+        Pregunta preguntaExistente = aplicacionPreguntas.getPregunta(id);
+
+        if (preguntaExistente == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Iterar sobre las respuestas actualizadas
+        for (Respuesta respuestaActualizada : respuestasActualizadas) {
+            if (respuestaActualizada.getId() != null) {
+                // Busca la respuesta en la pregunta existente usando su ID
+                Respuesta respuestaExistente = preguntaExistente.getRespuestas().stream()
+                        .filter(respuesta -> respuesta.getId().equals(respuestaActualizada.getId()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (respuestaExistente != null) {
+                    // Actualizar los campos necesarios
+                    respuestaExistente.setRespuesta(respuestaActualizada.getRespuesta());
+                    respuestaExistente.setCorrecta(respuestaActualizada.isCorrecta());
+                    respuestaExistente.setId(respuestaActualizada.getId());
+                    respuestaExistente.setPregunta(respuestaActualizada.getPregunta());
+                    aplicacionRespuestas.insertRespuesta(respuestaExistente);
+                } else {
+                    // Manejar la lógica para respuestas nuevas, si es necesario
+                    // Asegúrate de que las respuestas nuevas tengan un ID generado o se manejen
+                    // correctamente
+                    respuestaActualizada.setPregunta(preguntaExistente); // Establecer relación con la pregunta
+                    preguntaExistente.getRespuestas().add(respuestaActualizada);
+                }
+            } else {
+                // Si no hay ID, puedes decidir no hacer nada o lanzar un error
+                System.out.println("Respuesta sin ID encontrada: " + respuestaActualizada);
+            }
+        }
+
+        // Guarda la pregunta actualizada
+        aplicacionPreguntas.insertPregunta(preguntaExistente);
+
+        return ResponseEntity.ok(preguntaExistente);
     }
 
     @DeleteMapping("eliminar/{id}")

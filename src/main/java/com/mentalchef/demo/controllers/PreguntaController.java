@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,8 @@ import com.mentalchef.demo.dto.PreguntaDtoConverter;
 import com.mentalchef.demo.modelos.Pregunta;
 
 import lombok.AllArgsConstructor;
-
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
@@ -29,8 +31,9 @@ public class PreguntaController {
     PreguntaDtoConverter preguntaDtoConverter;
 
     @GetMapping("")
-    public List<Pregunta> getpreguntas() {
-        return aplicacionPregunta.getPreguntas();
+    public ResponseEntity<List<Pregunta>> getpreguntas() {
+        List<Pregunta> preguntas = aplicacionPregunta.getPreguntas();
+        return ResponseEntity.ok(preguntas);
     }
 
     @PostMapping("/insertar")
@@ -40,6 +43,27 @@ public class PreguntaController {
         PreguntaDto resultadoDto = preguntaDtoConverter.convertToPreguntaDto(nuevaPregunta);
 
         return ResponseEntity.ok(resultadoDto);
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<Pregunta> actualizarPregunta(@PathVariable Long id, @RequestBody Pregunta preguntaActualizada) {
+        Pregunta preguntaExistente = aplicacionPregunta.getPregunta(id);
+        
+        if (preguntaExistente == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        preguntaExistente.setPregunta(preguntaActualizada.getPregunta());
+        preguntaExistente.setCuriosidad(preguntaActualizada.getCuriosidad());
+        preguntaExistente.setDificultad(preguntaActualizada.getDificultad());
+        preguntaExistente.setCategoria(preguntaActualizada.getCategoria());
+        preguntaExistente.setRespuestas(preguntaActualizada.getRespuestas());
+        preguntaExistente.setImagen(preguntaActualizada.getImagen());
+
+
+        aplicacionPregunta.insertPregunta(preguntaExistente);
+        
+        return ResponseEntity.ok(preguntaExistente);
     }
 
     @DeleteMapping("eliminar/{id}")
@@ -62,6 +86,15 @@ public class PreguntaController {
         Pregunta pregunta = aplicacionPregunta.getPreguntaAlAzar();
         return preguntaDtoConverter.convertToPreguntaDto(pregunta);
     }
-    
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Pregunta> getPregunta(@PathVariable Long id) {
+        Pregunta pregunta = aplicacionPregunta.getPregunta(id);
+        if (pregunta != null) {
+            return ResponseEntity.ok(pregunta);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }
