@@ -1,23 +1,26 @@
 package com.mentalchef.demo.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mentalchef.demo.aplicacion.AplicacionUsuarios;
+import com.mentalchef.demo.dto.userdtos.UserGetDto;
+import com.mentalchef.demo.dto.userdtos.UserRegisterDto;
 import com.mentalchef.demo.modelos.Chef;
 import com.mentalchef.demo.modelos.Pinche;
 import com.mentalchef.demo.modelos.Usuario;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PutMapping;
 
 @AllArgsConstructor
 @RestController
@@ -37,16 +40,17 @@ public class UsuarioController {
         return aplicacionUsuarios.getUsuario(id);
     }
 
-    @PostMapping("/insertar")
-    public ResponseEntity<String> insertarPinche(@RequestBody Pinche pinche) {
-        // Si es necesario, puedes hacer más validaciones aquí.
-        aplicacionUsuarios.insertUsuario(pinche);
-        return new ResponseEntity<>("Pinche insertado exitosamente", HttpStatus.CREATED);
+    @PostMapping("/registrar")
+    public ResponseEntity<UserGetDto> registrar(@RequestBody UserRegisterDto entity) {
+        Optional<UserGetDto> toReturn = aplicacionUsuarios.guardar(entity);
+
+        return toReturn
+                .map(user -> ResponseEntity.status(HttpStatus.CREATED).body(user))
+                .orElseGet(() -> ResponseEntity.badRequest().body(null));
     }
 
     @PutMapping("/actualizar/{id}")
     public ResponseEntity<String> putMethodName(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
-        // Obtén el usuario de la base de datos usando el id
         Usuario usuario = aplicacionUsuarios.getUsuario(id);
 
         // Verifica si el usuario existe
@@ -55,7 +59,7 @@ public class UsuarioController {
         }
 
         // Actualiza los campos del usuario con los datos del cuerpo de la solicitud
-        usuario.setNombre(usuarioActualizado.getNombre());
+        usuario.setUsername(usuarioActualizado.getUsername());
         usuario.setMonedaV(usuarioActualizado.getMonedaV());
         usuario.setEmail(usuarioActualizado.getEmail());
         usuario.setDescripcion(usuarioActualizado.getDescripcion());
