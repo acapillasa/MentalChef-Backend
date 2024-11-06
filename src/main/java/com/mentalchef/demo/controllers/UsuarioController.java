@@ -5,6 +5,10 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,9 +26,11 @@ import com.mentalchef.demo.modelos.Usuario;
 
 import lombok.AllArgsConstructor;
 
+
 @AllArgsConstructor
 @RestController
 @RequestMapping("/usuarios")
+@EnableMethodSecurity
 public class UsuarioController {
 
     AplicacionUsuarios aplicacionUsuarios;
@@ -82,5 +88,24 @@ public class UsuarioController {
         aplicacionUsuarios.insertUsuario(chef);
         return aplicacionUsuarios.insertUsuario(usuario);
     }
+
+
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public String getMethodName(@AuthenticationPrincipal Usuario usuario) {
+        // ROL
+        // return SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
+        //Informacion usuario
+        // return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        String toReturn;
+
+        toReturn = "Usuario: " + usuario.getUsername() + "\n" + "Email: " + usuario.getEmail() + "\n" + "Descripcion: "
+                + usuario.getDescripcion() + "\n" + "Moneda: " + usuario.getMonedaV() + "\n" + "Fecha de creacion: "
+                + usuario.getFechaCreacion() + "\n" + "Fecha de actualizacion: " + usuario.getFechaActualizacion();
+        return toReturn;
+        // return "hola mundo";
+    }
+    
 
 }

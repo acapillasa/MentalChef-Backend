@@ -24,13 +24,24 @@ public class CategoriaController {
 
     CategoriaDtoConverter categoriaDtoConverter;
 
-    @GetMapping("")
-    public List<CategoriaDto> getCategorias() {
-
+    @GetMapping("/categoriasConEvento")
+    public List<CategoriaDto> getCategoriasConEvento() {
         List<CategoriaDto> listaDto = new ArrayList<>();
-        for (Categoria categoriaDto : aplicacionCategorias.getCategorias()) {
+        for (Categoria categoria : aplicacionCategorias.getCategorias()) {
+            if (categoria.getCategoria().startsWith("evento_")) {
+                listaDto.add(categoriaDtoConverter.convertToCategoriaDto(categoria));
+            }
+        }
+        return listaDto;
+    }
 
-            listaDto.add(categoriaDtoConverter.convertToCategoriaDto(categoriaDto));
+    @GetMapping("/categoriasSinEvento")
+    public List<CategoriaDto> getCategoriasSinEvento() {
+        List<CategoriaDto> listaDto = new ArrayList<>();
+        for (Categoria categoria : aplicacionCategorias.getCategorias()) {
+            if (!categoria.getCategoria().startsWith("evento_")) {
+                listaDto.add(categoriaDtoConverter.convertToCategoriaDto(categoria));
+            }
         }
         return listaDto;
     }
