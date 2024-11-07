@@ -180,7 +180,7 @@ public class Persistencia<T> implements IPersistencia<T> {
 
             String hqlPregunta = "FROM Pregunta p WHERE p.categoria.categoria = :categoria ORDER BY RAND()";
             Pregunta pregunta = sesion.createQuery(hqlPregunta, Pregunta.class)
-                    .setParameter("categoria", "diaria")
+                    .setParameter("categoria", "DIARIA")
                     .setMaxResults(1)
                     .uniqueResult();
 

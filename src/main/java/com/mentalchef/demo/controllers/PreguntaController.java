@@ -77,8 +77,13 @@ public class PreguntaController {
     }
 
     @GetMapping("/diaria")
-    public Pregunta getPreguntadiaria() {
-        return aplicacionPregunta.getPreguntaDiariaAlAzar();
+    public ResponseEntity<Pregunta> getPreguntaDiaria() {
+        Pregunta preguntaDiaria = aplicacionPregunta.getPreguntaAlAzar();
+        if (preguntaDiaria != null) {
+            return ResponseEntity.ok(preguntaDiaria);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
     }
 
     @GetMapping("/alAzar")
@@ -96,5 +101,12 @@ public class PreguntaController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/categoria/{categoria}")
+    public ResponseEntity<List<Pregunta>> getPreguntasPorCategoria(@PathVariable String categoria) {
+        List<Pregunta> preguntas = aplicacionPregunta.getPreguntaByCategoria(categoria);
+        return ResponseEntity.ok(preguntas);
+    }
+    
 
 }

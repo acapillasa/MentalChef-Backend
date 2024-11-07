@@ -68,7 +68,12 @@ public class AplicacionPregunta implements IAplicacionPregunta {
 
     @Override
     public List<Pregunta> getPreguntaByCategoria(String categoria) {
-        return persistencia.obtenerPreguntasPorCategoria(categoria);
+        try {
+            return persistencia.obtenerPreguntasPorCategoria(categoria);
+        } catch (Exception e) {
+            System.err.println("Error al obtener preguntas por categoria: " + categoria + " - " + e.getMessage());
+            return List.of();
+        }
     }
 
     @Override
