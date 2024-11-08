@@ -2,13 +2,9 @@ package com.mentalchef.demo.controllers;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.mentalchef.demo.aplicacion.IAplicacionPregunta;
 import com.mentalchef.demo.aplicacion.IAplicacionRespuestas;
@@ -19,20 +15,18 @@ import com.mentalchef.demo.dto.RespuestaDtoConverter;
 import com.mentalchef.demo.modelos.Pregunta;
 import com.mentalchef.demo.modelos.Respuesta;
 
-import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
 @RestController
-@AllArgsConstructor
 @RequestMapping("/respuestas")
 public class RespuestaController {
 
-    IAplicacionRespuestas aplicacionRespuestas;
+    @Autowired
+    private IAplicacionRespuestas aplicacionRespuestas;
 
-    IAplicacionPregunta aplicacionPreguntas;
+    @Autowired
+    private IAplicacionPregunta aplicacionPreguntas;
 
-    RespuestaDtoConverter respuestaDtoConverter;
+    @Autowired
+    private RespuestaDtoConverter respuestaDtoConverter;
 
     @GetMapping("")
     public List<Respuesta> getRespuestas() {
@@ -40,7 +34,14 @@ public class RespuestaController {
     }
 
     @PostMapping("/insertar")
-    public ResponseEntity<String> insertarRespuesta(@RequestBody List<RespuestaDto> respuestasDto) {
+    public ResponseEntity<String> insertarRespuesta(@RequestBody RespuestaDto respuestaDto) {
+        Respuesta respuesta = respuestaDtoConverter.convertToRespuesta(respuestaDto);
+        aplicacionRespuestas.insertRespuesta(respuesta);
+        return ResponseEntity.ok("Respuesta insertada con éxito");
+    }
+
+    @PostMapping("/insertarLista")
+    public ResponseEntity<String> insertarListRespuesta(@RequestBody List<RespuestaDto> respuestasDto) {
         for (RespuestaDto respuestaDto : respuestasDto) {
             aplicacionRespuestas.insertRespuesta(respuestaDtoConverter.convertToRespuesta(respuestaDto));
         }
