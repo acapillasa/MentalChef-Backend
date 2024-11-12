@@ -15,4 +15,6 @@ public interface IAplicacionRespuestas {
     public List<Respuesta> getListRespuestaByName(String Respuesta);
 
     public void deleteRespuestaById(int id);
+
+    public void deleteRespuestasByPreguntaId(Long id);
 }
