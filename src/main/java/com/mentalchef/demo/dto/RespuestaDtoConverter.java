@@ -21,7 +21,7 @@ public class RespuestaDtoConverter {
         RespuestaDto respuestaDto = new RespuestaDto();
 
         // Mapea los campos de Respuesta a RespuestaDto
-        respuestaDto.setId(respuesta.getId());
+        respuestaDto.setIdRespuesta(respuesta.getId());
         respuestaDto.setRespuesta(respuesta.getRespuesta());
         respuestaDto.setCorrecta(respuesta.isCorrecta());
         respuestaDto.setPreguntaId(respuesta.getPregunta().getId());
@@ -34,12 +34,12 @@ public class RespuestaDtoConverter {
     public Respuesta convertToRespuesta(RespuestaDto respuestaDto) {
         Respuesta respuesta = new Respuesta();
 
+        respuesta.setId(respuestaDto.getIdRespuesta());
         respuesta.setRespuesta(respuestaDto.getRespuesta());
         respuesta.setCorrecta(respuestaDto.isCorrecta());
         respuesta.setPregunta(aplicacionPregunta.getPregunta(respuestaDto.getPreguntaId()));
         respuesta.setUsuario(aplicacionUsuarios.getUsuario(respuestaDto.getUsuarioId()));
 
         return respuesta;
-
     }
 }

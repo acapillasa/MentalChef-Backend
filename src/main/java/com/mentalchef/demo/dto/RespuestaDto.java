@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class RespuestaDto {
-    private Long id;
+    private Long idRespuesta;
     private String respuesta;
     private boolean correcta;
     private Long preguntaId;

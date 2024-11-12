@@ -48,9 +48,9 @@ public class RespuestaController {
         return ResponseEntity.ok("Respuestas insertadas con éxito");
     }
 
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<Pregunta> actualizarRespuestas(@PathVariable Long id,
-            @RequestBody List<Respuesta> respuestasActualizadas) {
+    @PutMapping("/actualizarLista/{id}")
+    public ResponseEntity<String> actualizarRespuestas(@PathVariable Long id,
+            @RequestBody List<RespuestaDto> respuestasActualizadasDto) {
         // Buscar la pregunta existente por su ID
         Pregunta preguntaExistente = aplicacionPreguntas.getPregunta(id);
 
@@ -59,7 +59,8 @@ public class RespuestaController {
         }
 
         // Iterar sobre las respuestas actualizadas
-        for (Respuesta respuestaActualizada : respuestasActualizadas) {
+        for (RespuestaDto respuestaActualizadaDto : respuestasActualizadasDto) {
+            Respuesta respuestaActualizada = respuestaDtoConverter.convertToRespuesta(respuestaActualizadaDto);
             if (respuestaActualizada.getId() != null) {
                 // Busca la respuesta en la pregunta existente usando su ID
                 Respuesta respuestaExistente = preguntaExistente.getRespuestas().stream()
@@ -71,35 +72,12 @@ public class RespuestaController {
                     // Actualizar los campos necesarios
                     respuestaExistente.setRespuesta(respuestaActualizada.getRespuesta());
                     respuestaExistente.setCorrecta(respuestaActualizada.isCorrecta());
-                    respuestaExistente.setId(respuestaActualizada.getId());
-                    respuestaExistente.setPregunta(respuestaActualizada.getPregunta());
+                    // Guardar la respuesta actualizada
                     aplicacionRespuestas.insertRespuesta(respuestaExistente);
-                } else {
-                    // Manejar la lógica para respuestas nuevas, si es necesario
-                    // Asegúrate de que las respuestas nuevas tengan un ID generado o se manejen
-                    // correctamente
-                    respuestaActualizada.setPregunta(preguntaExistente); // Establecer relación con la pregunta
-                    preguntaExistente.getRespuestas().add(respuestaActualizada);
                 }
-            } else {
-                // Si no hay ID, puedes decidir no hacer nada o lanzar un error
-                System.out.println("Respuesta sin ID encontrada: " + respuestaActualizada);
             }
         }
 
-        // Guarda la pregunta actualizada
-        aplicacionPreguntas.insertPregunta(preguntaExistente);
-
-        return ResponseEntity.ok(preguntaExistente);
-    }
-
-    @DeleteMapping("eliminar/{id}")
-    public String eliminarRespuesta(int id) {
-        try {
-            aplicacionRespuestas.deleteRespuestaById(id);
-            return "Respuesta eliminada con exito";
-        } catch (Exception e) {
-            return "Error al eliminar respuesta";
-        }
+        return ResponseEntity.ok("Respuestas actualizadas con éxito");
     }
 }

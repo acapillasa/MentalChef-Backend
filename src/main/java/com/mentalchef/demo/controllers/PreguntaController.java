@@ -11,22 +11,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mentalchef.demo.aplicacion.IAplicacionCategorias;
 import com.mentalchef.demo.aplicacion.IAplicacionPregunta;
 import com.mentalchef.demo.dto.PreguntaDto;
 import com.mentalchef.demo.dto.PreguntaDtoConverter;
+import com.mentalchef.demo.modelos.Dificultad;
 import com.mentalchef.demo.modelos.Pregunta;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
-
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/preguntas")
 public class PreguntaController {
 
-    IAplicacionPregunta aplicacionPregunta;
+    @Autowired
+    private IAplicacionPregunta aplicacionPregunta;
+
+    private IAplicacionCategorias aplicacionCategorias;
 
     PreguntaDtoConverter preguntaDtoConverter;
 
@@ -46,23 +51,24 @@ public class PreguntaController {
     }
 
     @PutMapping("/actualizar/{id}")
-    public ResponseEntity<Pregunta> actualizarPregunta(@PathVariable Long id, @RequestBody Pregunta preguntaActualizada) {
+    public ResponseEntity<Pregunta> actualizarPregunta(@PathVariable Long id, @RequestBody PreguntaDto preguntaDto) {
+        // Buscar la pregunta existente por su ID
         Pregunta preguntaExistente = aplicacionPregunta.getPregunta(id);
-        
+
         if (preguntaExistente == null) {
             return ResponseEntity.notFound().build();
         }
-        
-        preguntaExistente.setPregunta(preguntaActualizada.getPregunta());
-        preguntaExistente.setCuriosidad(preguntaActualizada.getCuriosidad());
-        preguntaExistente.setDificultad(preguntaActualizada.getDificultad());
-        preguntaExistente.setCategoria(preguntaActualizada.getCategoria());
-        preguntaExistente.setRespuestas(preguntaActualizada.getRespuestas());
-        preguntaExistente.setImagen(preguntaActualizada.getImagen());
+
+        // Actualizar los campos de la pregunta existente
+        preguntaExistente.setPregunta(preguntaDto.getPregunta());
+        preguntaExistente.setDificultad(Dificultad.valueOf(preguntaDto.getDificultad()));
+        preguntaExistente.setVerificado(preguntaDto.isVerificado());
+        preguntaExistente.setCuriosidad(preguntaDto.getCuriosidad());
+        preguntaExistente.setImagen(preguntaDto.getImagen());
+        preguntaExistente.setCategoria(aplicacionCategorias.getCategoriaByName(preguntaDto.getCategoria()));
 
 
         aplicacionPregunta.insertPregunta(preguntaExistente);
-        
         return ResponseEntity.ok(preguntaExistente);
     }
 
