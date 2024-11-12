@@ -1,9 +1,10 @@
-package com.mentalchef.demo.aplicacion;
+package com.mentalchef.demo.aplicacion.impl;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.mentalchef.demo.aplicacion.IAplicacionPregunta;
 import com.mentalchef.demo.modelos.Pregunta;
 import com.mentalchef.demo.persistencia.IPersistencia;
 

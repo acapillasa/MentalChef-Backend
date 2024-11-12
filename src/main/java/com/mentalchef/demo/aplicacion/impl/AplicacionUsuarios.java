@@ -1,10 +1,11 @@
-package com.mentalchef.demo.aplicacion;
+package com.mentalchef.demo.aplicacion.impl;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.mentalchef.demo.aplicacion.IAplicacionUsuarios;
 import com.mentalchef.demo.dto.userdtos.UserDtoConverter;
 import com.mentalchef.demo.dto.userdtos.UserGetDto;
 import com.mentalchef.demo.dto.userdtos.UserRegisterDto;

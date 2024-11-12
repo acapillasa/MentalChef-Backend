@@ -80,4 +80,12 @@ public class RespuestaController {
 
         return ResponseEntity.ok("Respuestas actualizadas con éxito");
     }
+
+    @DeleteMapping("/eliminarPorPregunta/{id}")
+    public ResponseEntity<String> eliminarRespuestasPorPregunta(@PathVariable Long id) {
+
+        aplicacionRespuestas.deleteRespuestasByPreguntaId(id);
+
+        return ResponseEntity.ok("Respuestas eliminadas con éxito");
+    }
 }

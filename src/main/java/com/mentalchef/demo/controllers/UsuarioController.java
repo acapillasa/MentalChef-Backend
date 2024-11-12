@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mentalchef.demo.aplicacion.AplicacionUsuarios;
+import com.mentalchef.demo.aplicacion.impl.AplicacionUsuarios;
 import com.mentalchef.demo.dto.userdtos.UserGetDto;
 import com.mentalchef.demo.dto.userdtos.UserRegisterDto;
 import com.mentalchef.demo.modelos.Chef;

@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 @RestController
 @AllArgsConstructor
@@ -31,9 +32,11 @@ public class PreguntaController {
     @Autowired
     private IAplicacionPregunta aplicacionPregunta;
 
+    @Autowired
     private IAplicacionCategorias aplicacionCategorias;
 
-    PreguntaDtoConverter preguntaDtoConverter;
+    @Autowired
+    private PreguntaDtoConverter preguntaDtoConverter;
 
     @GetMapping("")
     public ResponseEntity<List<Pregunta>> getpreguntas() {
@@ -48,6 +51,38 @@ public class PreguntaController {
         PreguntaDto resultadoDto = preguntaDtoConverter.convertToPreguntaDto(nuevaPregunta);
 
         return ResponseEntity.ok(resultadoDto);
+    }
+
+    @PatchMapping("/verificar/{id}")
+    public ResponseEntity<Pregunta> verificarPregunta(@PathVariable Long id) {
+        // Buscar la pregunta existente por su ID
+        Pregunta preguntaExistente = aplicacionPregunta.getPregunta(id);
+
+        if (preguntaExistente == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Verificar la pregunta
+        preguntaExistente.setVerificado(true);
+
+        aplicacionPregunta.insertPregunta(preguntaExistente);
+        return ResponseEntity.ok(preguntaExistente);
+    }
+
+    @PatchMapping("/desverificar/{id}")
+    public ResponseEntity<Pregunta> desverificarPregunta(@PathVariable Long id) {
+        // Buscar la pregunta existente por su ID
+        Pregunta preguntaExistente = aplicacionPregunta.getPregunta(id);
+
+        if (preguntaExistente == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Desverificar la pregunta
+        preguntaExistente.setVerificado(false);
+
+        aplicacionPregunta.insertPregunta(preguntaExistente);
+        return ResponseEntity.ok(preguntaExistente);
     }
 
     @PutMapping("/actualizar/{id}")
@@ -67,13 +102,12 @@ public class PreguntaController {
         preguntaExistente.setImagen(preguntaDto.getImagen());
         preguntaExistente.setCategoria(aplicacionCategorias.getCategoriaByName(preguntaDto.getCategoria()));
 
-
         aplicacionPregunta.insertPregunta(preguntaExistente);
         return ResponseEntity.ok(preguntaExistente);
     }
 
     @DeleteMapping("eliminar/{id}")
-    public String eliminarPregunta(int id) {
+    public String eliminarPregunta(@PathVariable int id) {
         try {
             aplicacionPregunta.deletePreguntaById(id);
             return "Pregunta eliminada con exito";
@@ -113,6 +147,4 @@ public class PreguntaController {
         List<Pregunta> preguntas = aplicacionPregunta.getPreguntaByCategoria(categoria);
         return ResponseEntity.ok(preguntas);
     }
-    
-
 }

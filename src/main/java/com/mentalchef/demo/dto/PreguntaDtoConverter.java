@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.mentalchef.demo.aplicacion.AplicacionCategorias;
-import com.mentalchef.demo.aplicacion.AplicacionUsuarios;
+import com.mentalchef.demo.aplicacion.impl.AplicacionCategorias;
+import com.mentalchef.demo.aplicacion.impl.AplicacionUsuarios;
 import com.mentalchef.demo.modelos.Dificultad;
 import com.mentalchef.demo.modelos.Pregunta;
 

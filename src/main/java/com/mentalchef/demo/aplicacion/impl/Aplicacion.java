@@ -1,6 +1,7 @@
-package com.mentalchef.demo.aplicacion;
+package com.mentalchef.demo.aplicacion.impl;
 
 
+import com.mentalchef.demo.aplicacion.IAplicacion;
 import com.mentalchef.demo.persistencia.IPersistencia;
 
 import lombok.AllArgsConstructor;

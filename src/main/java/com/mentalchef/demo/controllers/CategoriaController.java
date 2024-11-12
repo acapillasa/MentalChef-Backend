@@ -46,6 +46,15 @@ public class CategoriaController {
         return listaDto;
     }
 
+    @GetMapping("/todas")
+    public List<CategoriaDto> getTodasCategorias() {
+        List<CategoriaDto> listaDto = new ArrayList<>();
+        for (Categoria categoria : aplicacionCategorias.getCategorias()) {
+            listaDto.add(categoriaDtoConverter.convertToCategoriaDto(categoria));
+        }
+        return listaDto;
+    }
+
     @PostMapping("/insertar")
     public String insertarCategoria(Categoria categoria) {
         return aplicacionCategorias.insertCategoria(categoria);

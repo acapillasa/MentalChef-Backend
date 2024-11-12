@@ -3,8 +3,8 @@ package com.mentalchef.demo.dto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.mentalchef.demo.aplicacion.AplicacionPregunta;
-import com.mentalchef.demo.aplicacion.AplicacionUsuarios;
+import com.mentalchef.demo.aplicacion.impl.AplicacionPregunta;
+import com.mentalchef.demo.aplicacion.impl.AplicacionUsuarios;
 import com.mentalchef.demo.modelos.Respuesta;
 
 @Component

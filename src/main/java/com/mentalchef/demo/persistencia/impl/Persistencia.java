@@ -1,23 +1,41 @@
-package com.mentalchef.demo.persistencia;
+package com.mentalchef.demo.persistencia.impl;
 
 import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.mentalchef.demo.modelos.Categoria;
 import com.mentalchef.demo.modelos.Comentario;
 import com.mentalchef.demo.modelos.Pregunta;
 import com.mentalchef.demo.modelos.Respuesta;
+import com.mentalchef.demo.persistencia.IPersistencia;
 
 import lombok.AllArgsConstructor;
 
+@Repository
 @AllArgsConstructor
 public class Persistencia<T> implements IPersistencia<T> {
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     private Session sesion;
 
     private Class<T> tipoEntidad;
+
+    public Persistencia(Session session, Class<T> tipoEntidad) {
+
+        this.sesion = session;
+
+        this.tipoEntidad = tipoEntidad;
+
+    }
+    public Persistencia() {
+    }
 
     @Override
     public boolean guardar(Object t) {
@@ -275,6 +293,15 @@ public class Persistencia<T> implements IPersistencia<T> {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public boolean eliminarRespuestasDePregunta(Long preguntaId) {
+        Session session = sessionFactory.getCurrentSession();
+        int result = session.createQuery("DELETE FROM Respuesta WHERE pregunta.id = :id", Respuesta.class)
+                            .setParameter("id", preguntaId)
+                            .executeUpdate();
+        return result > 0;
     }
 
 }

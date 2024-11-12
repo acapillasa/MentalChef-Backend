@@ -1,9 +1,10 @@
-package com.mentalchef.demo.aplicacion;
+package com.mentalchef.demo.aplicacion.impl;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.mentalchef.demo.aplicacion.IAplicacionRespuestas;
 import com.mentalchef.demo.modelos.Respuesta;
 import com.mentalchef.demo.persistencia.IPersistencia;
 
@@ -44,6 +45,11 @@ public class AplicacionRespuestas implements IAplicacionRespuestas {
     @Override
     public void deleteRespuestaById(int id) {
         persistencia.eliminar(persistencia.obtener(id));
+    }
+
+    @Override
+    public void deleteRespuestasByPreguntaId(Long id) {
+        persistencia.eliminarRespuestasDePregunta(id);
     }
 
 }
