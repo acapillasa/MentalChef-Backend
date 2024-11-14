@@ -58,8 +58,8 @@ public class AplicacionPregunta implements IAplicacionPregunta {
     }
 
     @Override
-    public void deletePreguntaById(int id) {
-        persistencia.eliminar(persistencia.obtener(id));
+    public boolean deletePreguntaById(Long id) {
+        return persistencia.eliminarPreguntaPorId(id);
     }
 
     @Override

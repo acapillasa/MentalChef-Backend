@@ -6,6 +6,8 @@ import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -25,6 +27,8 @@ import com.mentalchef.demo.modelos.ProgresoId;
 import com.mentalchef.demo.modelos.Respuesta;
 import com.mentalchef.demo.modelos.Tienda;
 import com.mentalchef.demo.modelos.Usuario;
+import com.mentalchef.demo.persistencia.impl.Persistencia;
+import com.mentalchef.demo.persistencia.IPersistencia;
 
 @org.springframework.context.annotation.Configuration
 @EnableTransactionManagement
@@ -41,6 +45,7 @@ public class SpringPersistenciaConf {
     }
 
     @Bean
+    @Primary
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource);
@@ -70,70 +75,88 @@ public class SpringPersistenciaConf {
         return new JpaTransactionManager(entityManagerFactory.getObject());
     }
 
+    // Configure SessionFactory to use a CurrentSessionContext
+    @Bean
+    public SessionFactory sessionFactory(DataSource dataSource) {
+        LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
+        sessionFactoryBean.setDataSource(dataSource);
+        sessionFactoryBean.setPackagesToScan("com.mentalchef.demo.modelos");
+        Properties hibernateProperties = new Properties();
+        hibernateProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "update");
+        hibernateProperties.setProperty("hibernate.show_sql", "true");
+        hibernateProperties.setProperty("hibernate.current_session_context_class", "thread");
+        sessionFactoryBean.setHibernateProperties(hibernateProperties);
+        try {
+            sessionFactoryBean.afterPropertiesSet();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return sessionFactoryBean.getObject();
+    }
+
+    // Generic method to create IPersistencia beans
+    private <T> IPersistencia<T> createPersistenciaBean(SessionFactory sessionFactory, Class<T> clazz) {
+        return new Persistencia<>(sessionFactory.openSession(), clazz);
+    }
 
     @Bean
     public IPersistencia<Categoria> getPersistenciaCategoria(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), Categoria.class);
+        return createPersistenciaBean(sessionFactory, Categoria.class);
     }
 
-    // Bean para la persistencia de Usuario
     @Bean
     public IPersistencia<Usuario> getPersistenciaUsuario(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), Usuario.class);
+        return createPersistenciaBean(sessionFactory, Usuario.class);
     }
 
     @Bean
     public IPersistencia<Chef> getPersistenciaChef(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), Chef.class);
+        return createPersistenciaBean(sessionFactory, Chef.class);
     }
 
     @Bean
     public IPersistencia<Pinche> getPersistenciaPinche(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), Pinche.class);
+        return createPersistenciaBean(sessionFactory, Pinche.class);
     }
 
-    // Bean para la persistencia de Tienda
     @Bean
     public IPersistencia<Tienda> getPersistenciaTienda(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), Tienda.class);
+        return createPersistenciaBean(sessionFactory, Tienda.class);
     }
 
-    // Bean para la persistencia de Pregunta
     @Bean
     public IPersistencia<Pregunta> getPersistenciaPregunta(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), Pregunta.class);
+        return createPersistenciaBean(sessionFactory, Pregunta.class);
     }
 
-    // Bean para la persistencia de Respuesta
     @Bean
     public IPersistencia<Respuesta> getPersistenciaRespuesta(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), Respuesta.class);
+        return createPersistenciaBean(sessionFactory, Respuesta.class);
     }
 
-    // Bean para la persistencia de Comentario
     @Bean
     public IPersistencia<Comentario> getPersistenciaComentario(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), Comentario.class);
+        return createPersistenciaBean(sessionFactory, Comentario.class);
     }
 
-    // Bean para la persistencia de Progreso
     @Bean
     public IPersistencia<Progreso> getPersistenciaProgreso(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), Progreso.class);
+        return createPersistenciaBean(sessionFactory, Progreso.class);
     }
 
     @Bean
     public IPersistencia<ProgresoId> getPersistenciaProgresoId(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), ProgresoId.class);
+        return createPersistenciaBean(sessionFactory, ProgresoId.class);
     }
 
     @Bean
     public IPersistencia<Compra> getPersistenciaCompra(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), Compra.class);
+        return createPersistenciaBean(sessionFactory, Compra.class);
     }
 
     @Bean
     public IPersistencia<CompraId> getPersistenciaCompraId(SessionFactory sessionFactory) {
-        return new Persistencia<>(sessionFactory.openSession(), CompraId.class);
+        return createPersistenciaBean(sessionFactory, CompraId.class);
     }
 }

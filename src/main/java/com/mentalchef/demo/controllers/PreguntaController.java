@@ -106,8 +106,8 @@ public class PreguntaController {
         return ResponseEntity.ok(preguntaExistente);
     }
 
-    @DeleteMapping("eliminar/{id}")
-    public String eliminarPregunta(@PathVariable int id) {
+    @DeleteMapping("/eliminar/{id}")
+    public String eliminarPregunta(@PathVariable Long id) {
         try {
             aplicacionPregunta.deletePreguntaById(id);
             return "Pregunta eliminada con exito";

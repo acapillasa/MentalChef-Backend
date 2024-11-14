@@ -1,67 +1,57 @@
 package com.mentalchef.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.mentalchef.demo.aplicacion.AplicacionUsuarios;
+import com.mentalchef.security.jwt.JwtAuthenticationFilter;
 
 @Configuration
 public class SecurityConf {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    @Lazy
+    private UserDetailsService customUserDetailService;
 
     @Bean
-    public UserDetailsService userDetailsService(AplicacionUsuarios aplicacionUsuarios) {
-        return new CustomUserDetailService(aplicacionUsuarios);
+    public AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http
+                .getSharedObject(AuthenticationManagerBuilder.class);
+
+        authenticationManagerBuilder
+                .userDetailsService(customUserDetailService)
+                .passwordEncoder(passwordEncoder);
+
+        return authenticationManagerBuilder.build();
     }
-
-    // @Bean
-    // public UserDetailsService userDetailsService() {
-    //     InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-
-    //     UserDetails user1 = User.builder()
-    //             .username("user1")
-    //             .password(passwordEncoder().encode("1234"))
-    //             .roles("ADMIN")
-    //             .build();
-
-    //     UserDetails user2 = User.builder()
-    //             .username("user2")
-    //             .password(passwordEncoder().encode("123456"))
-    //             .roles("PINCHE")
-    //             .build();
-
-    //     manager.createUser(user1);
-    //     manager.createUser(user2);
-
-    //     return manager;
-    // }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
-                
-                // .requestMatchers("/preguntas/**")
-                // .authenticated()
-
-                // .requestMatchers("/categorias/**")
-                // .hasRole("/chef")
-                
-                .anyRequest().permitAll()
-                )
-
-                .httpBasic(Customizer.withDefaults());
+                        .requestMatchers("/usuarios/login", "/usuarios/registrar", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

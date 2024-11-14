@@ -14,11 +14,11 @@ public interface IAplicacionPregunta {
 
     public List<Pregunta> getPreguntaByName(String pregunta);
 
-    public void deletePreguntaById(int id);
-
     public Pregunta getPreguntaDiariaAlAzar();
 
     public Pregunta getPreguntaAlAzar();
 
     public List<Pregunta> getPreguntaByCategoria(String categoria);
+
+    public boolean deletePreguntaById(Long id);
 }

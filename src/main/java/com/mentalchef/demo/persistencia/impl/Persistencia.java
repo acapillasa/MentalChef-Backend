@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.mentalchef.demo.modelos.Categoria;
@@ -20,20 +18,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class Persistencia<T> implements IPersistencia<T> {
 
-    @Autowired
-    private SessionFactory sessionFactory;
-
     private Session sesion;
 
     private Class<T> tipoEntidad;
 
-    public Persistencia(Session session, Class<T> tipoEntidad) {
-
-        this.sesion = session;
-
-        this.tipoEntidad = tipoEntidad;
-
-    }
     public Persistencia() {
     }
 
@@ -297,11 +285,34 @@ public class Persistencia<T> implements IPersistencia<T> {
 
     @Override
     public boolean eliminarRespuestasDePregunta(Long preguntaId) {
-        Session session = sessionFactory.getCurrentSession();
-        int result = session.createQuery("DELETE FROM Respuesta WHERE pregunta.id = :id", Respuesta.class)
-                            .setParameter("id", preguntaId)
-                            .executeUpdate();
-        return result > 0;
+        try {
+            sesion.beginTransaction();
+            int result = sesion.createQuery("DELETE FROM Respuesta WHERE pregunta.id = :id")
+                    .setParameter("id", preguntaId)
+                    .executeUpdate();
+            sesion.getTransaction().commit();
+            return result > 0;
+        } catch (Exception e) {
+            sesion.getTransaction().rollback();
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean eliminarPreguntaPorId(Long preguntaId) {
+        try {
+            sesion.beginTransaction();
+            int result = sesion.createQuery("DELETE FROM Pregunta WHERE id = :id")
+                    .setParameter("id", preguntaId)
+                    .executeUpdate();
+            sesion.getTransaction().commit();
+            return result > 0;
+        } catch (Exception e) {
+            sesion.getTransaction().rollback();
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

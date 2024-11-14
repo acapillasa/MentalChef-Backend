@@ -37,4 +37,6 @@ public interface IPersistencia<T> {
 
     public boolean eliminarRespuestasDePregunta(Long id);
 
+    public boolean eliminarPreguntaPorId(Long preguntaId);
+
 }
