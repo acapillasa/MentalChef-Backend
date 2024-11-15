@@ -46,8 +46,9 @@ public class SecurityConf {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/usuarios/login", "/usuarios/registrar", "/swagger-ui/**").permitAll()
+                        .requestMatchers("/usuarios/login", "/usuarios/logout", "/usuarios/registrar", "/usuarios/registrarChef", "/usuarios/me", "/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/categorias/categoriasConEvento", "/categorias/categoriasSinEvento").authenticated()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

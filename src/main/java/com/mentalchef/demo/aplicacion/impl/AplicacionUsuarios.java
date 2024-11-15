@@ -46,15 +46,39 @@ public class AplicacionUsuarios implements IAplicacionUsuarios {
         return usuarios.isEmpty() ? null : usuarios.get(0);
     }
 
-    public Optional<UserGetDto> guardar(UserRegisterDto userRegisterDto) {
+    @Override
+    public Optional<UserGetDto> guardarPinche(UserRegisterDto userRegisterDto) {
         if (!userRegisterDto.getPassword().equals(userRegisterDto.getPasswordConfirm())) {
             logger.warn("Las contraseñas no coinciden para el usuario: {}", userRegisterDto.getUsername());
             return Optional.empty();
         }
         System.out.println(userRegisterDto.toString());
+        System.out.println("NO PASA POR AQUI");
 
         try {
             Usuario usuario = userDtoConverter.toPinche(userRegisterDto);
+            if (persistencia.guardar(usuario)) {
+                return Optional.of(userDtoConverter.toUserGetDto(usuario));
+            } else {
+                logger.warn("Error al guardar el usuario en la base de datos: {}", userRegisterDto.getUsername());
+                return Optional.empty();
+            }
+        } catch (Exception e) {
+            logger.error("Error al guardar el usuario: {}", userRegisterDto.getUsername(), e);
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<UserGetDto> guardarChef(UserRegisterDto userRegisterDto) {
+        logger.info("Attempting to register chef: {}", userRegisterDto.getUsername());
+        if (!userRegisterDto.getPassword().equals(userRegisterDto.getPasswordConfirm())) {
+            logger.warn("Las contraseñas no coinciden para el usuario: {}", userRegisterDto.getUsername());
+            return Optional.empty();
+        }
+
+        try {
+            Usuario usuario = userDtoConverter.toChef(userRegisterDto);
             if (persistencia.guardar(usuario)) {
                 return Optional.of(userDtoConverter.toUserGetDto(usuario));
             } else {

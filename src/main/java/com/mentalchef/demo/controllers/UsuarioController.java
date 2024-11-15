@@ -34,6 +34,7 @@ import com.mentalchef.security.jwt.JwtTokenProvider;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import jakarta.annotation.security.PermitAll;
 
 @AllArgsConstructor
 @RestController
@@ -60,7 +61,17 @@ public class UsuarioController {
 
     @PostMapping("/registrar")
     public ResponseEntity<UserGetDto> registrar(@RequestBody UserRegisterDto entity) {
-        Optional<UserGetDto> toReturn = aplicacionUsuarios.guardar(entity);
+        Optional<UserGetDto> toReturn = aplicacionUsuarios.guardarPinche(entity);
+
+        return toReturn
+                .map(user -> ResponseEntity.status(HttpStatus.CREATED).body(user))
+                .orElseGet(() -> ResponseEntity.badRequest().body(null));
+    }
+
+    @PostMapping("/registrarChef")
+    public ResponseEntity<UserGetDto> registrarChef(@RequestBody UserRegisterDto entity) {
+        System.out.println("Received request to register chef: " + entity.getUsername());
+        Optional<UserGetDto> toReturn = aplicacionUsuarios.guardarChef(entity);
 
         return toReturn
                 .map(user -> ResponseEntity.status(HttpStatus.CREATED).body(user))
@@ -109,14 +120,14 @@ public class UsuarioController {
         // SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
         // Informacion usuario
         // return
-        // SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 
-        String toReturn;
+        // String toReturn;
 
-        toReturn = "Usuario: " + usuario.getUsername() + "\n" + "Email: " + usuario.getEmail() + "\n" + "Descripcion: "
-                + usuario.getDescripcion() + "\n" + "Moneda: " + usuario.getMonedaV() + "\n" + "Fecha de creacion: "
-                + usuario.getFechaCreacion() + "\n" + "Fecha de actualizacion: " + usuario.getFechaActualizacion();
-        return toReturn;
+        // toReturn = "Usuario: " + usuario.getUsername() + "\n" + "Email: " + usuario.getEmail() + "\n" + "Descripcion: "
+        //         + usuario.getDescripcion() + "\n" + "Moneda: " + usuario.getMonedaV() + "\n" + "Fecha de creacion: "
+        //         + usuario.getFechaCreacion() + "\n" + "Fecha de actualizacion: " + usuario.getFechaActualizacion();
+        // return toReturn;
         // return "hola mundo";
     }
 
@@ -156,6 +167,22 @@ public class UsuarioController {
 
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
+    }
+
+    @PostMapping("/logout")
+    @PermitAll
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .maxAge(0) // Invalidate the cookie
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok("Logged out");
     }
 
     @GetMapping("/isAuthenticated")

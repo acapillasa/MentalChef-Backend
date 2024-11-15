@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.mentalchef.demo.modelos.Chef;
 import com.mentalchef.demo.modelos.Pinche;
 import com.mentalchef.demo.modelos.Usuario;
 import com.mentalchef.demo.modelos.usuario.UserRoles;
@@ -27,8 +28,15 @@ public class UserDtoConverter {
         pinche.setRoles(Stream.of(UserRoles.PINCHE).collect(Collectors.toSet()));
         return pinche;
     }
-    
-    
+
+    public Chef toChef(UserRegisterDto usuarioDTO) {
+        Chef chef = new Chef();
+        chef.setUsername(usuarioDTO.getUsername());
+        chef.setPassword(passwordEncoder.encode(usuarioDTO.getPassword()));
+        chef.setEmail(usuarioDTO.getEmail());
+        chef.setRoles(Stream.of(UserRoles.CHEF).collect(Collectors.toSet()));
+        return chef;
+    }
 
     public UserGetDto toUserGetDto(Usuario usuario) {
         return UserGetDto.builder().username(usuario.getUsername()).email(usuario.getEmail())
