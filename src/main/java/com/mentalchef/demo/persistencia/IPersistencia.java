@@ -5,7 +5,6 @@ import java.util.List;
 import com.mentalchef.demo.modelos.Categoria;
 import com.mentalchef.demo.modelos.Comentario;
 import com.mentalchef.demo.modelos.Pregunta;
-import com.mentalchef.demo.modelos.Respuesta;
 
 public interface IPersistencia<T> {
 

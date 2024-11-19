@@ -3,6 +3,7 @@ package com.mentalchef.demo.controllers;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,7 +44,8 @@ import jakarta.annotation.security.PermitAll;
 @EnableMethodSecurity
 public class UsuarioController {
 
-    AplicacionUsuarios aplicacionUsuarios;
+    @Autowired
+    private AplicacionUsuarios aplicacionUsuarios;
 
     AuthenticationManager authenticationManager;
 
@@ -114,21 +117,29 @@ public class UsuarioController {
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    public String getMethodName(@AuthenticationPrincipal Usuario usuario) {
-        // ROL
-        // return
-        // SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString();
-        // Informacion usuario
-        // return
-        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    public ResponseEntity<?> getMethodName(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            System.out.println("Authenticated user is null");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+        System.out.println("Authenticated user: " + userDetails.getUsername());
+        return ResponseEntity.ok(userDetails);
+    }
 
-        // String toReturn;
-
-        // toReturn = "Usuario: " + usuario.getUsername() + "\n" + "Email: " + usuario.getEmail() + "\n" + "Descripcion: "
-        //         + usuario.getDescripcion() + "\n" + "Moneda: " + usuario.getMonedaV() + "\n" + "Fecha de creacion: "
-        //         + usuario.getFechaCreacion() + "\n" + "Fecha de actualizacion: " + usuario.getFechaActualizacion();
-        // return toReturn;
-        // return "hola mundo";
+    @GetMapping("/monedasV")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> getMonedasV(@AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            System.out.println("Authenticated user is null");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+        if (!(userDetails instanceof Usuario)) {
+            System.out.println("Authenticated user is not an instance of Usuario");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+        Usuario usuario = (Usuario) userDetails;
+        System.out.println("Authenticated user: " + usuario.getUsername());
+        return ResponseEntity.ok(usuario.getMonedaV());
     }
 
     @PostMapping("/login")
@@ -189,6 +200,7 @@ public class UsuarioController {
     public ResponseEntity<Boolean> isAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = authentication != null && authentication.isAuthenticated() && !(authentication.getPrincipal() instanceof String && authentication.getPrincipal().equals("anonymousUser"));
+        System.out.println("Authentication status: " + isAuthenticated);
         return ResponseEntity.ok(isAuthenticated);
     }
 

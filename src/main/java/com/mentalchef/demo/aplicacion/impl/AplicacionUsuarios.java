@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.mentalchef.demo.aplicacion.IAplicacionUsuarios;
 import com.mentalchef.demo.dto.userdtos.UserDtoConverter;
@@ -26,6 +27,7 @@ public class AplicacionUsuarios implements IAplicacionUsuarios {
     private final UserDtoConverter userDtoConverter;
 
     @Override
+    @Transactional(readOnly = true)
     public Usuario getUsuario(Long id) {
         try {
             return persistencia.obtener(id);
@@ -36,17 +38,20 @@ public class AplicacionUsuarios implements IAplicacionUsuarios {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Usuario> getUsuarios() {
         return persistencia.obtenerTodos();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Usuario buscarPorNombre(String nombre) {
         List<Usuario> usuarios = persistencia.query("username", nombre);
         return usuarios.isEmpty() ? null : usuarios.get(0);
     }
 
     @Override
+    @Transactional
     public Optional<UserGetDto> guardarPinche(UserRegisterDto userRegisterDto) {
         if (!userRegisterDto.getPassword().equals(userRegisterDto.getPasswordConfirm())) {
             logger.warn("Las contraseñas no coinciden para el usuario: {}", userRegisterDto.getUsername());
@@ -70,6 +75,7 @@ public class AplicacionUsuarios implements IAplicacionUsuarios {
     }
 
     @Override
+    @Transactional
     public Optional<UserGetDto> guardarChef(UserRegisterDto userRegisterDto) {
         logger.info("Attempting to register chef: {}", userRegisterDto.getUsername());
         if (!userRegisterDto.getPassword().equals(userRegisterDto.getPasswordConfirm())) {
@@ -92,6 +98,7 @@ public class AplicacionUsuarios implements IAplicacionUsuarios {
     }
 
     @Override
+    @Transactional
     public String insertUsuario(Usuario usuario) {
         try {
             persistencia.guardar(usuario);
@@ -103,6 +110,7 @@ public class AplicacionUsuarios implements IAplicacionUsuarios {
     }
 
     @Override
+    @Transactional
     public String deleteUsuario(Usuario usuario) {
         try {
             persistencia.eliminar(usuario);
@@ -114,6 +122,7 @@ public class AplicacionUsuarios implements IAplicacionUsuarios {
     }
 
     @Override
+    @Transactional
     public String updateUsuario(Usuario usuario) {
         try {
             persistencia.actualizar(usuario);

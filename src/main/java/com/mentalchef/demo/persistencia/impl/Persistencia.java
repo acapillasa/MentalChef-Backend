@@ -9,95 +9,73 @@ import org.springframework.stereotype.Repository;
 import com.mentalchef.demo.modelos.Categoria;
 import com.mentalchef.demo.modelos.Comentario;
 import com.mentalchef.demo.modelos.Pregunta;
-import com.mentalchef.demo.modelos.Respuesta;
 import com.mentalchef.demo.persistencia.IPersistencia;
 
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Repository
-@AllArgsConstructor
+@NoArgsConstructor
 public class Persistencia<T> implements IPersistencia<T> {
 
-    private Session sesion;
-
+    private Session session;
     private Class<T> tipoEntidad;
 
-    public Persistencia() {
+    public void setSession(Session session) {
+        this.session = session;
+    }
+
+    public void setTipoEntidad(Class<T> tipoEntidad) {
+        this.tipoEntidad = tipoEntidad;
     }
 
     @Override
     public boolean guardar(Object t) {
-
         try {
-            sesion.beginTransaction();
-
-            sesion.persist(t);
-
-            sesion.getTransaction().commit();
-
+            session.beginTransaction();
+            session.persist(t);
+            session.getTransaction().commit();
             return true;
-
         } catch (Exception e) {
-            sesion.getTransaction().rollback();
+            session.getTransaction().rollback();
             return false;
         }
-
     }
 
     @Override
     public T obtener(Object id) {
-
         try {
-            sesion.getTransaction().begin();
-
-            T objeto = sesion.get(tipoEntidad, (Long) id);
-
-            sesion.getTransaction().commit();
+            session.beginTransaction();
+            T objeto = session.get(tipoEntidad, (Long) id);
+            session.getTransaction().commit();
             return objeto;
         } catch (Exception e) {
-
-            sesion.getTransaction().rollback();
-
+            session.getTransaction().rollback();
             return null;
         }
-
     }
 
     @Override
     public boolean actualizar(Object t) {
-
         try {
-            sesion.getTransaction().begin();
-
-            sesion.merge(t);
-
-            sesion.getTransaction().commit();
-
+            session.beginTransaction();
+            session.merge(t);
+            session.getTransaction().commit();
             return true;
-
         } catch (Exception e) {
-            sesion.getTransaction().rollback();
-
+            session.getTransaction().rollback();
             return false;
         }
-
     }
 
     @Override
     public boolean eliminar(Object t) {
-
         try {
-            sesion.getTransaction().begin();
-
-            sesion.remove(t);
-
-            sesion.getTransaction().commit();
-
+            session.beginTransaction();
+            session.remove(t);
+            session.getTransaction().commit();
             return true;
-
         } catch (Exception e) {
-            sesion.getTransaction().rollback();
-
+            session.getTransaction().rollback();
             return false;
         }
     }
@@ -105,39 +83,29 @@ public class Persistencia<T> implements IPersistencia<T> {
     @Override
     public List<T> obtenerTodos() {
         try {
-            sesion.getTransaction().begin();
-
+            session.beginTransaction();
             String hql = "from " + tipoEntidad.getSimpleName();
-            List<T> resultado = sesion.createQuery(hql, tipoEntidad).list();
-
-            sesion.getTransaction().commit();
-
+            List<T> resultado = session.createQuery(hql, tipoEntidad).list();
+            session.getTransaction().commit();
             return resultado;
-
         } catch (Exception e) {
-            sesion.getTransaction().rollback();
-
+            session.getTransaction().rollback();
             return null;
         }
     }
 
     @Override
     public List<T> obtenerPorNombre(String nombre) {
-
         try {
-            sesion.beginTransaction();
-
+            session.beginTransaction();
             String hql = "from " + tipoEntidad.getSimpleName() + " where nombre = :nombre";
-            List<T> resultados = sesion.createQuery(hql, tipoEntidad)
+            List<T> resultados = session.createQuery(hql, tipoEntidad)
                     .setParameter("nombre", nombre)
                     .list();
-
-            sesion.getTransaction().commit();
+            session.getTransaction().commit();
             return resultados;
-
         } catch (Exception e) {
-            sesion.getTransaction().rollback();
-
+            session.getTransaction().rollback();
             return null;
         }
     }
@@ -145,19 +113,15 @@ public class Persistencia<T> implements IPersistencia<T> {
     @Override
     public List<T> query(String key, String value) {
         try {
-            sesion.beginTransaction();
-
+            session.beginTransaction();
             String hql = "from " + tipoEntidad.getSimpleName() + " where " + key + " = :value";
-            List<T> resultados = sesion.createQuery(hql, tipoEntidad)
+            List<T> resultados = session.createQuery(hql, tipoEntidad)
                     .setParameter("value", value)
                     .getResultList();
-
-            sesion.getTransaction().commit();
+            session.getTransaction().commit();
             return resultados;
         } catch (Exception e) {
-
-            sesion.getTransaction().rollback();
-
+            session.getTransaction().rollback();
             e.printStackTrace();
             return null;
         }
@@ -166,7 +130,7 @@ public class Persistencia<T> implements IPersistencia<T> {
     @Override
     public List<Comentario> obtenerComentariosPorPregunta(Long preguntaId) {
         String hql = "FROM Comentario WHERE pregunta.id = :preguntaId";
-        return sesion.createQuery(hql, Comentario.class)
+        return session.createQuery(hql, Comentario.class)
                 .setParameter("preguntaId", preguntaId)
                 .getResultList();
     }
@@ -174,7 +138,7 @@ public class Persistencia<T> implements IPersistencia<T> {
     @Override
     public List<Comentario> obtenerComentariosPorUsuario(Long usuarioId) {
         String hql = "FROM Comentario WHERE usuario.id = :usuarioId";
-        return sesion.createQuery(hql, Comentario.class)
+        return session.createQuery(hql, Comentario.class)
                 .setParameter("usuarioId", usuarioId)
                 .getResultList();
     }
@@ -182,22 +146,19 @@ public class Persistencia<T> implements IPersistencia<T> {
     @Override
     public Pregunta obtenerPreguntaConRespuestasAleatoriaDiaria() {
         try {
-            sesion.beginTransaction();
-
+            session.beginTransaction();
             String hqlPregunta = "FROM Pregunta p WHERE p.categoria.categoria = :categoria ORDER BY RAND()";
-            Pregunta pregunta = sesion.createQuery(hqlPregunta, Pregunta.class)
+            Pregunta pregunta = session.createQuery(hqlPregunta, Pregunta.class)
                     .setParameter("categoria", "DIARIA")
                     .setMaxResults(1)
                     .uniqueResult();
-
             if (pregunta != null) {
                 Hibernate.initialize(pregunta.getRespuestas());
             }
-
-            sesion.getTransaction().commit();
+            session.getTransaction().commit();
             return pregunta;
         } catch (Exception e) {
-            sesion.getTransaction().rollback();
+            session.getTransaction().rollback();
             e.printStackTrace();
             return null;
         }
@@ -206,21 +167,18 @@ public class Persistencia<T> implements IPersistencia<T> {
     @Override
     public List<Pregunta> obtenerPreguntasPorCategoria(String nombreCategoria) {
         try {
-            sesion.beginTransaction();
-
+            session.beginTransaction();
             String hql = "FROM Pregunta p WHERE p.categoria.categoria = :categoria";
-            List<Pregunta> preguntas = sesion.createQuery(hql, Pregunta.class)
+            List<Pregunta> preguntas = session.createQuery(hql, Pregunta.class)
                     .setParameter("categoria", nombreCategoria)
                     .getResultList();
-
             for (Pregunta pregunta : preguntas) {
                 Hibernate.initialize(pregunta.getRespuestas());
             }
-
-            sesion.getTransaction().commit();
+            session.getTransaction().commit();
             return preguntas;
         } catch (Exception e) {
-            sesion.getTransaction().rollback();
+            session.getTransaction().rollback();
             e.printStackTrace();
             return null;
         }
@@ -229,36 +187,28 @@ public class Persistencia<T> implements IPersistencia<T> {
     @Override
     public Pregunta obtenerPreguntaConRespuestasAleatoria() {
         try {
-            sesion.beginTransaction();
-
-            // Verifica si hay preguntas disponibles
+            session.beginTransaction();
             String countHql = "SELECT COUNT(p) FROM Pregunta p";
-            Long totalPreguntas = sesion.createQuery(countHql, Long.class).uniqueResult();
-
+            Long totalPreguntas = session.createQuery(countHql, Long.class).uniqueResult();
             if (totalPreguntas == 0) {
                 System.out.println("No hay preguntas disponibles en la base de datos.");
-                sesion.getTransaction().commit();
+                session.getTransaction().commit();
                 return null;
             }
-
-            // Si hay preguntas, selecciona una al azar
             String hqlPregunta = "FROM Pregunta p JOIN FETCH p.respuestas ORDER BY RAND()";
-            Pregunta pregunta = sesion.createQuery(hqlPregunta, Pregunta.class)
+            Pregunta pregunta = session.createQuery(hqlPregunta, Pregunta.class)
                     .setMaxResults(1)
                     .uniqueResult();
-
-            // Verificación adicional para asegurarse de que la pregunta no sea nula
             if (pregunta == null) {
                 System.out.println("La consulta aleatoria no devolvió una pregunta.");
             } else {
                 System.out.println("Pregunta obtenida: " + pregunta.getId());
             }
-
-            sesion.getTransaction().commit();
+            session.getTransaction().commit();
             return pregunta;
         } catch (Exception e) {
-            if (sesion.getTransaction() != null) {
-                sesion.getTransaction().rollback();
+            if (session.getTransaction() != null) {
+                session.getTransaction().rollback();
             }
             e.printStackTrace();
             return null;
@@ -268,16 +218,14 @@ public class Persistencia<T> implements IPersistencia<T> {
     @Override
     public Categoria obtenerCategoriaPorNombre(String nombreCategoria) {
         try {
-            sesion.beginTransaction();
-
+            session.beginTransaction();
             String hql = "FROM Categoria WHERE categoria = :categoria";
-            Categoria categoria = sesion.createQuery(hql, Categoria.class)
+            Categoria categoria = session.createQuery(hql, Categoria.class)
                     .setParameter("categoria", nombreCategoria).uniqueResult();
-
-            sesion.getTransaction().commit();
+            session.getTransaction().commit();
             return categoria;
         } catch (Exception e) {
-            sesion.getTransaction().rollback();
+            session.getTransaction().rollback();
             e.printStackTrace();
             return null;
         }
@@ -286,14 +234,14 @@ public class Persistencia<T> implements IPersistencia<T> {
     @Override
     public boolean eliminarRespuestasDePregunta(Long preguntaId) {
         try {
-            sesion.beginTransaction();
-            int result = sesion.createQuery("DELETE FROM Respuesta WHERE pregunta.id = :id")
+            session.beginTransaction();
+            int result = session.createQuery("DELETE FROM Respuesta WHERE pregunta.id = :id")
                     .setParameter("id", preguntaId)
                     .executeUpdate();
-            sesion.getTransaction().commit();
+            session.getTransaction().commit();
             return result > 0;
         } catch (Exception e) {
-            sesion.getTransaction().rollback();
+            session.getTransaction().rollback();
             e.printStackTrace();
             return false;
         }
@@ -302,17 +250,16 @@ public class Persistencia<T> implements IPersistencia<T> {
     @Override
     public boolean eliminarPreguntaPorId(Long preguntaId) {
         try {
-            sesion.beginTransaction();
-            int result = sesion.createQuery("DELETE FROM Pregunta WHERE id = :id")
+            session.beginTransaction();
+            int result = session.createQuery("DELETE FROM Pregunta WHERE id = :id")
                     .setParameter("id", preguntaId)
                     .executeUpdate();
-            sesion.getTransaction().commit();
+            session.getTransaction().commit();
             return result > 0;
         } catch (Exception e) {
-            sesion.getTransaction().rollback();
+            session.getTransaction().rollback();
             e.printStackTrace();
             return false;
         }
     }
-
 }
