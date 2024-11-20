@@ -94,90 +94,68 @@ public class SpringPersistenciaConf {
 
     @Bean
     @Primary
-    public IPersistencia<Usuario> getPersistenciaUsuario(Session session) {
-        Persistencia<Usuario> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(Usuario.class);
+    public IPersistencia<Usuario> getPersistenciaUsuario(SessionFactory session) {
+        Persistencia<Usuario> persistencia = new Persistencia<Usuario>(session, Usuario.class);
         return persistencia;
     }
 
     @Bean
-    public IPersistencia<Chef> getPersistenciaChef(Session session) {
-        Persistencia<Chef> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(Chef.class);
+    public IPersistencia<Chef> getPersistenciaChef(SessionFactory session) {
+        Persistencia<Chef> persistencia = new Persistencia<Chef>(session, Chef.class);
         return persistencia;
     }
 
     @Bean
-    public IPersistencia<Pinche> getPersistenciaPinche(Session session) {
-        Persistencia<Pinche> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(Pinche.class);
+    public IPersistencia<Pinche> getPersistenciaPinche(SessionFactory session) {
+        Persistencia<Pinche> persistencia = new Persistencia<Pinche>(session, Pinche.class);
         return persistencia;
     }
 
     @Bean
-    public IPersistencia<Tienda> getPersistenciaTienda(Session session) {
-        Persistencia<Tienda> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(Tienda.class);
+    public IPersistencia<Tienda> getPersistenciaTienda(SessionFactory session) {
+        Persistencia<Tienda> persistencia = new Persistencia<Tienda>(session, Tienda.class);
         return persistencia;
     }
 
     @Bean
-    public IPersistencia<Pregunta> getPersistenciaPregunta(Session session) {
-        Persistencia<Pregunta> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(Pregunta.class);
+    public IPersistencia<Pregunta> getPersistenciaPregunta(SessionFactory session) {
+        Persistencia<Pregunta> persistencia = new Persistencia<Pregunta>(session, Pregunta.class);
         return persistencia;
     }
 
     @Bean
-    public IPersistencia<Respuesta> getPersistenciaRespuesta(Session session) {
-        Persistencia<Respuesta> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(Respuesta.class);
+    public IPersistencia<Respuesta> getPersistenciaRespuesta(SessionFactory session) {
+        Persistencia<Respuesta> persistencia = new Persistencia<Respuesta>(session, Respuesta.class);
         return persistencia;
     }
 
     @Bean
-    public IPersistencia<Comentario> getPersistenciaComentario(Session session) {
-        Persistencia<Comentario> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(Comentario.class);
+    public IPersistencia<Comentario> getPersistenciaComentario(SessionFactory session) {
+        Persistencia<Comentario> persistencia = new Persistencia<Comentario>(session, Comentario.class);
         return persistencia;
     }
 
     @Bean
-    public IPersistencia<Progreso> getPersistenciaProgreso(Session session) {
-        Persistencia<Progreso> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(Progreso.class);
+    public IPersistencia<Progreso> getPersistenciaProgreso(SessionFactory session) {
+        Persistencia<Progreso> persistencia = new Persistencia<Progreso>(session, Progreso.class);
         return persistencia;
     }
 
     @Bean
-    public IPersistencia<ProgresoId> getPersistenciaProgresoId(Session session) {
-        Persistencia<ProgresoId> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(ProgresoId.class);
+    public IPersistencia<ProgresoId> getPersistenciaProgresoId(SessionFactory session) {
+        Persistencia<ProgresoId> persistencia = new Persistencia<ProgresoId>(session, ProgresoId.class);
         return persistencia;
     }
 
     @Bean
-    public IPersistencia<Compra> getPersistenciaCompra(Session session) {
-        Persistencia<Compra> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(Compra.class);
+    public IPersistencia<Compra> getPersistenciaCompra(SessionFactory session) {
+        Persistencia<Compra> persistencia = new Persistencia<Compra>(session, Compra.class);
         return persistencia;
     }
 
     @Bean
-    public IPersistencia<CompraId> getPersistenciaCompraId(Session session) {
-        Persistencia<CompraId> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(CompraId.class);
+    public IPersistencia<CompraId> getPersistenciaCompraId(SessionFactory session) {
+        Persistencia<CompraId> persistencia = new Persistencia<CompraId>(session, CompraId.class);
         return persistencia;
     }
 }
