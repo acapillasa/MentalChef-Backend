@@ -12,12 +12,14 @@ import com.mentalchef.demo.modelos.Comentario;
 import com.mentalchef.demo.modelos.Pregunta;
 import com.mentalchef.demo.persistencia.IPersistencia;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @Repository
 @NoArgsConstructor
+@AllArgsConstructor
 public class Persistencia<T> implements IPersistencia<T> {
 
     private SessionFactory sessionFactory;

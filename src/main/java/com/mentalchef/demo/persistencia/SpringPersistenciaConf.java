@@ -87,10 +87,8 @@ public class SpringPersistenciaConf {
 
     // Interfaces Bean
     @Bean
-    public IPersistencia<Categoria> getPersistenciaCategoria(Session session) {
-        Persistencia<Categoria> persistencia = new Persistencia<>();
-        persistencia.setSession(session);
-        persistencia.setTipoEntidad(Categoria.class);
+    public IPersistencia<Categoria> getPersistenciaCategoria(SessionFactory session) {
+        Persistencia<Categoria> persistencia = new Persistencia<Categoria>(session, Categoria.class);
         return persistencia;
     }
 
