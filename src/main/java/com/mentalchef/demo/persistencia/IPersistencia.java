@@ -20,7 +20,7 @@ public interface IPersistencia<T> {
 
     public List<T> obtenerPorNombre(String nombre);
 
-    public List<T> query(String key, String value);
+    public List<T> query(String key, Object value);
 
     public List<Comentario> obtenerComentariosPorPregunta(Long preguntaId);
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
 import com.mentalchef.demo.modelos.Categoria;
@@ -11,32 +12,35 @@ import com.mentalchef.demo.modelos.Comentario;
 import com.mentalchef.demo.modelos.Pregunta;
 import com.mentalchef.demo.persistencia.IPersistencia;
 
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @Repository
 @NoArgsConstructor
 public class Persistencia<T> implements IPersistencia<T> {
 
-    private Session session;
+    private SessionFactory sessionFactory;
     private Class<T> tipoEntidad;
-
-    public void setSession(Session session) {
-        this.session = session;
-    }
-
-    public void setTipoEntidad(Class<T> tipoEntidad) {
-        this.tipoEntidad = tipoEntidad;
-    }
 
     @Override
     public boolean guardar(Object t) {
+
+        Session session = null;
+
         try {
+            session = this.sessionFactory.openSession();
             session.beginTransaction();
             session.persist(t);
             session.getTransaction().commit();
+            session.close();
             return true;
         } catch (Exception e) {
-            session.getTransaction().rollback();
+
+            if (session != null) {
+                session.getTransaction().rollback();
+                session.close();
+            }
             return false;
         }
     }
@@ -111,7 +115,7 @@ public class Persistencia<T> implements IPersistencia<T> {
     }
 
     @Override
-    public List<T> query(String key, String value) {
+    public List<T> query(String key, Object value) {
         try {
             session.beginTransaction();
             String hql = "from " + tipoEntidad.getSimpleName() + " where " + key + " = :value";

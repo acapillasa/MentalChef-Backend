@@ -40,7 +40,7 @@ public class SpringPersistenciaConf {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/MentalChef");
+        dataSource.setUrl("jdbc:mysql://10.14.1.60:3306/MentalChef");
         dataSource.setUsername("root");
         dataSource.setPassword("root");
         return dataSource;
