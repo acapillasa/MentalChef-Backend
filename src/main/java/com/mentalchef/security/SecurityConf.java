@@ -44,8 +44,8 @@ public class SecurityConf {
                 .requestMatchers("/v3/api-docs/**").permitAll()
 
                 .requestMatchers("/usuarios/monedasV", "/usuarios/me").authenticated()
-                .requestMatchers("/categorias/categoriasConEvento", "/categorias/categoriasSinEvento").authenticated()
-                
+                .requestMatchers("/categorias/categoriasConEvento", "/categorias/categoriasSinEvento", "/preguntas/diaria").authenticated()
+
                 .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
