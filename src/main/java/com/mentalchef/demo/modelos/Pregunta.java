@@ -60,6 +60,15 @@ public class Pregunta {
     }
 
 
+    public void addRespuesta(Respuesta respuesta) {
+        respuestas.add(respuesta);
+        respuesta.setPregunta(this);
+    }
+
+    public void removeRespuesta(Respuesta respuesta) {
+        respuestas.remove(respuesta);
+        respuesta.setPregunta(null);
+    }
 
 
     

@@ -118,12 +118,11 @@ public class UsuarioController {
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getMethodName(@AuthenticationPrincipal UserDetails userDetails) {
-        if (userDetails == null) {
-            System.out.println("Authenticated user is null");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
-        }
         System.out.println("Authenticated user: " + userDetails.getUsername());
-        return ResponseEntity.ok(userDetails);
+        UserGetDto userDto = new UserGetDto();
+        userDto.setUsername(userDetails.getUsername());
+        userDto.setRole(userDetails.getAuthorities().stream().findFirst().get().getAuthority());
+        return ResponseEntity.ok(userDto);
     }
 
     @GetMapping("/monedasV")

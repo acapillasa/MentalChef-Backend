@@ -22,6 +22,12 @@ public class RespuestaDto {
         this.correcta = correcta;
     }
 
+    public RespuestaDto(Long idRespuesta, String respuesta, boolean correcta) {
+        this.idRespuesta = idRespuesta;
+        this.respuesta = respuesta;
+        this.correcta = correcta;
+    }
+
     public RespuestaDto() {
     };
 }

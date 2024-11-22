@@ -34,6 +34,8 @@ public interface IPersistencia<T> {
 
     public Categoria obtenerCategoriaPorNombre(String categoria);
 
+    public Pregunta obtenerPreguntaPorNombre(String nombrePregunta);
+
     public boolean eliminarRespuestasDePregunta(Long id);
 
     public boolean eliminarPreguntaPorId(Long preguntaId);

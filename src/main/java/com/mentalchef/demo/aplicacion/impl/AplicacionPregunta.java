@@ -3,6 +3,7 @@ package com.mentalchef.demo.aplicacion.impl;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.mentalchef.demo.aplicacion.IAplicacionPregunta;
 import com.mentalchef.demo.modelos.Pregunta;
@@ -17,6 +18,7 @@ public class AplicacionPregunta implements IAplicacionPregunta {
     IPersistencia<Pregunta> persistencia;
 
     @Override
+    @Transactional
     public Pregunta getPregunta(Long id) {
         try {
             return persistencia.obtener(id);
@@ -27,6 +29,7 @@ public class AplicacionPregunta implements IAplicacionPregunta {
     }
 
     @Override
+    @Transactional
     public List<Pregunta> getPreguntas() {
         try {
             return persistencia.obtenerTodos();
@@ -37,6 +40,7 @@ public class AplicacionPregunta implements IAplicacionPregunta {
     }
 
     @Override
+    @Transactional
     public Pregunta insertPregunta(Pregunta pregunta) {
         try {
             persistencia.guardar(pregunta);
@@ -48,26 +52,30 @@ public class AplicacionPregunta implements IAplicacionPregunta {
     }
 
     @Override
-    public List<Pregunta> getPreguntaByName(String Pregunta) {
+    @Transactional
+    public Pregunta getPreguntaByName(String Pregunta) {
         try {
-            return persistencia.obtenerPorNombre(Pregunta);
+            return persistencia.obtenerPreguntaPorNombre(Pregunta);
         } catch (Exception e) {
             System.err.println("Error al obtener preguntas por nombre: " + Pregunta + " - " + e.getMessage());
-            return List.of();
+            return null;
         }
     }
 
     @Override
+    @Transactional
     public boolean deletePreguntaById(Long id) {
         return persistencia.eliminarPreguntaPorId(id);
     }
 
     @Override
+    @Transactional
     public Pregunta getPreguntaDiariaAlAzar() {
         return persistencia.obtenerPreguntaConRespuestasAleatoriaDiaria();
     }
 
     @Override
+    @Transactional
     public List<Pregunta> getPreguntaByCategoria(String categoria) {
         try {
             return persistencia.obtenerPreguntasPorCategoria(categoria);
@@ -78,6 +86,7 @@ public class AplicacionPregunta implements IAplicacionPregunta {
     }
 
     @Override
+    @Transactional
     public Pregunta getPreguntaAlAzar() {
         return persistencia.obtenerPreguntaConRespuestasAleatoria();
     }

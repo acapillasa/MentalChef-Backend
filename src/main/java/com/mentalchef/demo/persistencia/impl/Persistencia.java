@@ -368,6 +368,31 @@ public class Persistencia<T> implements IPersistencia<T> {
     }
 
     @Override
+    public Pregunta obtenerPreguntaPorNombre(String nombrePregunta) {
+
+        Session session = null;
+
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            String hql = "FROM Pregunta WHERE pregunta = :pregunta";
+            Pregunta categoria = session.createQuery(hql, Pregunta.class)
+                    .setParameter("pregunta", nombrePregunta).uniqueResult();
+            session.getTransaction().commit();
+            session.close();
+            return categoria;
+        } catch (Exception e) {
+            if (session != null) {
+                session.getTransaction().rollback();
+                session.close();
+                
+            }
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
     public boolean eliminarRespuestasDePregunta(Long preguntaId) {
 
         Session session = null;

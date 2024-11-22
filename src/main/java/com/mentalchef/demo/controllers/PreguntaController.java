@@ -1,12 +1,16 @@
 package com.mentalchef.demo.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,14 +19,12 @@ import com.mentalchef.demo.aplicacion.IAplicacionCategorias;
 import com.mentalchef.demo.aplicacion.IAplicacionPregunta;
 import com.mentalchef.demo.dto.PreguntaDto;
 import com.mentalchef.demo.dto.PreguntaDtoConverter;
+import com.mentalchef.demo.dto.RespuestaDto;
 import com.mentalchef.demo.modelos.Dificultad;
 import com.mentalchef.demo.modelos.Pregunta;
+import com.mentalchef.demo.modelos.Respuesta;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PatchMapping;
 
 @RestController
 @AllArgsConstructor
@@ -46,10 +48,27 @@ public class PreguntaController {
 
     @PostMapping("/insertar")
     public ResponseEntity<PreguntaDto> insertarPregunta(@RequestBody PreguntaDto preguntaDto) {
-        Pregunta nuevaPregunta = aplicacionPregunta.insertPregunta(preguntaDtoConverter.convertToPregunta(preguntaDto));
+        // Convertir PreguntaDto a Pregunta sin respuestas
+        Pregunta pregunta = preguntaDtoConverter.convertToPreguntaWithoutRespuestas(preguntaDto);
+        
+        // Insertar la pregunta y 
+        aplicacionPregunta.insertPregunta(pregunta);
+
+        // obtener la pregunta con ID generado
+        Pregunta nuevaPregunta = aplicacionPregunta.getPreguntaByName(pregunta.getPregunta());
+        // Asociar respuestas con la pregunta y guardar las respuestas
+        if (preguntaDto.getRespuestas() != null) {
+            for (RespuestaDto respuestaDto : preguntaDto.getRespuestas()) {
+                Respuesta respuesta = new Respuesta(respuestaDto.getRespuesta(), respuestaDto.isCorrecta());
+                respuesta.setPregunta(nuevaPregunta); // Asociar la respuesta con la pregunta
+                nuevaPregunta.addRespuesta(respuesta);
+            }
+            aplicacionPregunta.insertPregunta(nuevaPregunta); // Guardar las respuestas
+        }
+
 
         PreguntaDto resultadoDto = preguntaDtoConverter.convertToPreguntaDto(nuevaPregunta);
-
+        System.out.println("Pregunta insertada: " + resultadoDto.toString());
         return ResponseEntity.ok(resultadoDto);
     }
 
@@ -117,10 +136,12 @@ public class PreguntaController {
     }
 
     @GetMapping("/diaria")
-    public ResponseEntity<Pregunta> getPreguntaDiaria() {
+    public ResponseEntity<PreguntaDto> getPreguntaDiaria() {
         Pregunta preguntaDiaria = aplicacionPregunta.getPreguntaAlAzar();
+        PreguntaDto preguntaDiariaDto = preguntaDtoConverter.convertToPreguntaDto(preguntaDiaria);
+
         if (preguntaDiaria != null) {
-            return ResponseEntity.ok(preguntaDiaria);
+            return ResponseEntity.ok(preguntaDiariaDto);
         } else {
             return ResponseEntity.noContent().build();
         }
@@ -133,18 +154,23 @@ public class PreguntaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pregunta> getPregunta(@PathVariable Long id) {
+    public ResponseEntity<PreguntaDto> getPregunta(@PathVariable Long id) {
         Pregunta pregunta = aplicacionPregunta.getPregunta(id);
+        PreguntaDto preguntaDto = preguntaDtoConverter.convertToPreguntaDto(pregunta);
         if (pregunta != null) {
-            return ResponseEntity.ok(pregunta);
+            return ResponseEntity.ok(preguntaDto);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/categoria/{categoria}")
-    public ResponseEntity<List<Pregunta>> getPreguntasPorCategoria(@PathVariable String categoria) {
+    public ResponseEntity<List<PreguntaDto>> getPreguntasPorCategoria(@PathVariable String categoria) {
         List<Pregunta> preguntas = aplicacionPregunta.getPreguntaByCategoria(categoria);
-        return ResponseEntity.ok(preguntas);
+        List<PreguntaDto> preguntasDto = new ArrayList<>();
+        for (Pregunta pregunta : preguntas) {
+            preguntasDto.add(preguntaDtoConverter.convertToPreguntaDto(pregunta));
+        }
+        return ResponseEntity.ok(preguntasDto);
     }
 }

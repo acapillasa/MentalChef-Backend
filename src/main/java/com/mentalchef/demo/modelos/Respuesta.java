@@ -58,6 +58,11 @@ public class Respuesta {
         this.respuesta = respuesta;
     }
 
+    public Respuesta(String respuesta, boolean correcta) {
+        this.respuesta = respuesta;
+        this.correcta = correcta;
+    }
+
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fechacreacion", updatable = false)

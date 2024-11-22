@@ -12,7 +12,7 @@ public interface IAplicacionPregunta {
 
     public Pregunta insertPregunta(Pregunta pregunta);
 
-    public List<Pregunta> getPreguntaByName(String pregunta);
+    public Pregunta getPreguntaByName(String pregunta);
 
     public Pregunta getPreguntaDiariaAlAzar();
 
