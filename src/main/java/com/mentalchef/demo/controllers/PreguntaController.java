@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -24,10 +25,7 @@ import com.mentalchef.demo.modelos.Dificultad;
 import com.mentalchef.demo.modelos.Pregunta;
 import com.mentalchef.demo.modelos.Respuesta;
 
-import lombok.AllArgsConstructor;
-
 @RestController
-@AllArgsConstructor
 @RequestMapping("/preguntas")
 public class PreguntaController {
 
@@ -41,31 +39,32 @@ public class PreguntaController {
     private PreguntaDtoConverter preguntaDtoConverter;
 
     @GetMapping("")
-    public ResponseEntity<List<Pregunta>> getpreguntas() {
+    public ResponseEntity<List<Pregunta>> getPreguntas() {
         List<Pregunta> preguntas = aplicacionPregunta.getPreguntas();
         return ResponseEntity.ok(preguntas);
     }
 
     @PostMapping("/insertar")
+    @Transactional
     public ResponseEntity<PreguntaDto> insertarPregunta(@RequestBody PreguntaDto preguntaDto) {
         // Convertir PreguntaDto a Pregunta sin respuestas
         Pregunta pregunta = preguntaDtoConverter.convertToPreguntaWithoutRespuestas(preguntaDto);
         
-        // Insertar la pregunta y 
-        aplicacionPregunta.insertPregunta(pregunta);
+        // Insertar la pregunta y obtener la pregunta con ID generado
+        Pregunta nuevaPregunta = aplicacionPregunta.insertPregunta(pregunta);
+        
+        // // Asociar respuestas con la pregunta y guardar las respuestas
+        // if (preguntaDto.getRespuestas() != null) {
+        //     for (RespuestaDto respuestaDto : preguntaDto.getRespuestas()) {
+        //         Respuesta respuesta = new Respuesta(respuestaDto.getRespuesta(), respuestaDto.isCorrecta());
+        //         respuesta.setPregunta(nuevaPregunta); // Asociar la respuesta con la pregunta
+        //         nuevaPregunta.addRespuesta(respuesta);
+        //     }
+        //     aplicacionPregunta.insertPregunta(nuevaPregunta); // Guardar las respuestas
+        // }
 
-        // obtener la pregunta con ID generado
-        Pregunta nuevaPregunta = aplicacionPregunta.getPreguntaByName(pregunta.getPregunta());
-        // Asociar respuestas con la pregunta y guardar las respuestas
-        if (preguntaDto.getRespuestas() != null) {
-            for (RespuestaDto respuestaDto : preguntaDto.getRespuestas()) {
-                Respuesta respuesta = new Respuesta(respuestaDto.getRespuesta(), respuestaDto.isCorrecta());
-                respuesta.setPregunta(nuevaPregunta); // Asociar la respuesta con la pregunta
-                nuevaPregunta.addRespuesta(respuesta);
-            }
-            aplicacionPregunta.insertPregunta(nuevaPregunta); // Guardar las respuestas
-        }
-
+        // Recargar la entidad para asegurarse de que el ID y las fechas estén actualizados
+        nuevaPregunta = aplicacionPregunta.getPreguntaByName(nuevaPregunta.getPregunta());
 
         PreguntaDto resultadoDto = preguntaDtoConverter.convertToPreguntaDto(nuevaPregunta);
         System.out.println("Pregunta insertada: " + resultadoDto.toString());

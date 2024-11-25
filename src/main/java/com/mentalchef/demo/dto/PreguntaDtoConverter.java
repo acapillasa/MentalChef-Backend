@@ -57,10 +57,10 @@ public class PreguntaDtoConverter {
         preguntaDto.setCategoria(pregunta.getCategoria().getCategoria());
         preguntaDto.setUsuario(pregunta.getUsuario().getId());
 
-        // Convertir y agregar respuestas
-        preguntaDto.setRespuestas(pregunta.getRespuestas().stream()
-                .map(respuesta -> new RespuestaDto(respuesta.getId(), respuesta.getRespuesta(), respuesta.isCorrecta()))
-                .collect(Collectors.toList()));
+        // // Convertir y agregar respuestas
+        // preguntaDto.setRespuestas(pregunta.getRespuestas().stream()
+        //         .map(respuesta -> new RespuestaDto(respuesta.getId(), respuesta.getRespuesta(), respuesta.isCorrecta()))
+        //         .collect(Collectors.toList()));
 
         return preguntaDto;
     }
