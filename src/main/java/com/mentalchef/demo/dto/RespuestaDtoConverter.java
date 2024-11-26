@@ -42,4 +42,16 @@ public class RespuestaDtoConverter {
 
         return respuesta;
     }
+
+        // Convierte un RespuestaDto a una entidad Respuesta
+        public Respuesta convertToRespuestaWithoutUsuario(RespuestaDto respuestaDto) {
+            Respuesta respuesta = new Respuesta();
+    
+            respuesta.setId(respuestaDto.getIdRespuesta());
+            respuesta.setRespuesta(respuestaDto.getRespuesta());
+            respuesta.setCorrecta(respuestaDto.isCorrecta());
+            respuesta.setPregunta(aplicacionPregunta.getPregunta(respuestaDto.getPreguntaId()));
+                
+            return respuesta;
+        }
 }

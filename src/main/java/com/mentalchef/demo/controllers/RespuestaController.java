@@ -4,7 +4,15 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.mentalchef.demo.aplicacion.IAplicacionPregunta;
 import com.mentalchef.demo.aplicacion.IAplicacionRespuestas;
@@ -28,9 +36,24 @@ public class RespuestaController {
     @Autowired
     private RespuestaDtoConverter respuestaDtoConverter;
 
+    @Autowired
+    private PreguntaDtoConverter preguntaDtoConverter;
+
     @GetMapping("")
     public List<Respuesta> getRespuestas() {
         return aplicacionRespuestas.getRespuestas();
+    }
+
+    @GetMapping("/preguntaId/{id}")
+    public List<RespuestaDto> getRespuestasByPreguntaId(@PathVariable Long id) {
+         
+        List<Respuesta> listaRespuestas = aplicacionRespuestas.getRespuestasByPreguntaId(id);
+
+        List<RespuestaDto> listaRespuestasDto = listaRespuestas.stream()
+                .map(respuesta -> respuestaDtoConverter.convertToRespuestaDto(respuesta))
+                .toList();
+        
+        return listaRespuestasDto;
     }
 
     @PostMapping("/insertar")
@@ -49,6 +72,7 @@ public class RespuestaController {
     }
 
     @PutMapping("/actualizarLista/{id}")
+    @Transactional
     public ResponseEntity<String> actualizarRespuestas(@PathVariable Long id,
             @RequestBody List<RespuestaDto> respuestasActualizadasDto) {
         // Buscar la pregunta existente por su ID
@@ -58,22 +82,34 @@ public class RespuestaController {
             return ResponseEntity.notFound().build();
         }
 
+        // Convertir la pregunta existente a DTO para evitar la inicialización perezosa
+        PreguntaDto preguntaDto = preguntaDtoConverter.convertToPreguntaDto(preguntaExistente);
+
+        List<Respuesta> listaRespuestas = aplicacionRespuestas.getRespuestasByPreguntaId(id);
+
+        List<RespuestaDto> listaRespuestasDto = listaRespuestas.stream()
+                .map(respuesta -> respuestaDtoConverter.convertToRespuestaDto(respuesta))
+                .toList();
+
+        // Asignar las respuestas existentes a la pregunta DTO
+        preguntaDto.setRespuestas(listaRespuestasDto);
+
         // Iterar sobre las respuestas actualizadas
         for (RespuestaDto respuestaActualizadaDto : respuestasActualizadasDto) {
-            Respuesta respuestaActualizada = respuestaDtoConverter.convertToRespuesta(respuestaActualizadaDto);
+            Respuesta respuestaActualizada = respuestaDtoConverter.convertToRespuestaWithoutUsuario(respuestaActualizadaDto);
             if (respuestaActualizada.getId() != null) {
                 // Busca la respuesta en la pregunta existente usando su ID
-                Respuesta respuestaExistente = preguntaExistente.getRespuestas().stream()
-                        .filter(respuesta -> respuesta.getId().equals(respuestaActualizada.getId()))
+                RespuestaDto respuestaExistenteDto = preguntaDto.getRespuestas().stream()
+                        .filter(respuesta -> respuesta.getIdRespuesta().equals(respuestaActualizada.getId()))
                         .findFirst()
                         .orElse(null);
 
-                if (respuestaExistente != null) {
+                if (respuestaExistenteDto != null) {
                     // Actualizar los campos necesarios
-                    respuestaExistente.setRespuesta(respuestaActualizada.getRespuesta());
-                    respuestaExistente.setCorrecta(respuestaActualizada.isCorrecta());
+                    respuestaExistenteDto.setRespuesta(respuestaActualizada.getRespuesta());
+                    respuestaExistenteDto.setCorrecta(respuestaActualizada.isCorrecta());
                     // Guardar la respuesta actualizada
-                    aplicacionRespuestas.insertRespuesta(respuestaExistente);
+                    aplicacionRespuestas.insertRespuesta(respuestaDtoConverter.convertToRespuesta(respuestaExistenteDto));
                 }
             }
         }

@@ -443,4 +443,30 @@ public class Persistencia<T> implements IPersistencia<T> {
             return false;
         }
     }
+
+    @Override
+    public List<Respuesta> obtenerRespuestasDePregunta(Long id) {
+            
+            Session session = null;
+    
+            try {
+                session = sessionFactory.openSession();
+                session.beginTransaction();
+                String hql = "FROM Respuesta WHERE pregunta.id = :id";
+                List<Respuesta> respuestas = session.createQuery(hql, Respuesta.class)
+                        .setParameter("id", id)
+                        .getResultList();
+                session.getTransaction().commit();
+                session.close();
+                return respuestas;
+            } catch (Exception e) {
+                if (session != null) {
+                    session.getTransaction().rollback();
+                    session.close();
+                    
+                }
+                e.printStackTrace();
+                return null;
+            }
+    }
 }

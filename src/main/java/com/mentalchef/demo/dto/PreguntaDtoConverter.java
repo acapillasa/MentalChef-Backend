@@ -65,6 +65,25 @@ public class PreguntaDtoConverter {
         return preguntaDto;
     }
 
+    public PreguntaDto convertToPreguntaWithRespuestasDto(Pregunta pregunta) {
+        PreguntaDto preguntaDto = new PreguntaDto();
+        preguntaDto.setId(pregunta.getId());
+        preguntaDto.setPregunta(pregunta.getPregunta());
+        preguntaDto.setDificultad(pregunta.getDificultad().name());
+        preguntaDto.setVerificado(pregunta.isVerificado());
+        preguntaDto.setCuriosidad(pregunta.getCuriosidad());
+        preguntaDto.setImagen(pregunta.getImagen());
+        preguntaDto.setCategoria(pregunta.getCategoria().getCategoria());
+        preguntaDto.setUsuario(pregunta.getUsuario().getId());
+
+        // Convertir y agregar respuestas
+        preguntaDto.setRespuestas(pregunta.getRespuestas().stream()
+                .map(respuesta -> new RespuestaDto(respuesta.getId(), respuesta.getRespuesta(), respuesta.isCorrecta()))
+                .collect(Collectors.toList()));
+
+        return preguntaDto;
+    }
+
     public Pregunta convertToPreguntaWithoutRespuestas(PreguntaDto preguntaDto) {
         Pregunta pregunta = new Pregunta();
         pregunta.setPregunta(preguntaDto.getPregunta());

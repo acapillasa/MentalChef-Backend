@@ -52,4 +52,9 @@ public class AplicacionRespuestas implements IAplicacionRespuestas {
         persistencia.eliminarRespuestasDePregunta(id);
     }
 
+    @Override
+    public List<Respuesta> getRespuestasByPreguntaId(Long id) {
+        return persistencia.obtenerRespuestasDePregunta(id);
+    }
+
 }

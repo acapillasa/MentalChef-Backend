@@ -17,4 +17,6 @@ public interface IAplicacionRespuestas {
     public void deleteRespuestaById(int id);
 
     public void deleteRespuestasByPreguntaId(Long id);
+
+    public List<Respuesta> getRespuestasByPreguntaId(Long id);
 }

@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mentalchef.demo.aplicacion.IAplicacionCategorias;
 import com.mentalchef.demo.aplicacion.IAplicacionPregunta;
+import com.mentalchef.demo.aplicacion.IAplicacionRespuestas;
 import com.mentalchef.demo.dto.PreguntaDto;
 import com.mentalchef.demo.dto.PreguntaDtoConverter;
 import com.mentalchef.demo.dto.RespuestaDto;
+import com.mentalchef.demo.dto.RespuestaDtoConverter;
 import com.mentalchef.demo.modelos.Dificultad;
 import com.mentalchef.demo.modelos.Pregunta;
 import com.mentalchef.demo.modelos.Respuesta;
@@ -33,15 +35,28 @@ public class PreguntaController {
     private IAplicacionPregunta aplicacionPregunta;
 
     @Autowired
+    private IAplicacionRespuestas aplicacionRespuestas;
+
+    @Autowired
     private IAplicacionCategorias aplicacionCategorias;
+
+    @Autowired
+    private RespuestaDtoConverter respuestaDtoConverter;
 
     @Autowired
     private PreguntaDtoConverter preguntaDtoConverter;
 
     @GetMapping("")
-    public ResponseEntity<List<Pregunta>> getPreguntas() {
+    public ResponseEntity<List<PreguntaDto>> getPreguntas() {
         List<Pregunta> preguntas = aplicacionPregunta.getPreguntas();
-        return ResponseEntity.ok(preguntas);
+
+        List<PreguntaDto> preguntasDto = new ArrayList<>();
+
+        for (Pregunta pregunta : preguntas) {
+            preguntasDto.add(preguntaDtoConverter.convertToPreguntaDto(pregunta));
+        }
+
+        return ResponseEntity.ok(preguntasDto);
     }
 
     @PostMapping("/insertar")
@@ -72,7 +87,7 @@ public class PreguntaController {
     }
 
     @PatchMapping("/verificar/{id}")
-    public ResponseEntity<Pregunta> verificarPregunta(@PathVariable Long id) {
+    public ResponseEntity<PreguntaDto> verificarPregunta(@PathVariable Long id) {
         // Buscar la pregunta existente por su ID
         Pregunta preguntaExistente = aplicacionPregunta.getPregunta(id);
 
@@ -84,11 +99,14 @@ public class PreguntaController {
         preguntaExistente.setVerificado(true);
 
         aplicacionPregunta.insertPregunta(preguntaExistente);
-        return ResponseEntity.ok(preguntaExistente);
+
+        PreguntaDto preguntaDto = preguntaDtoConverter.convertToPreguntaDto(preguntaExistente);
+
+        return ResponseEntity.ok(preguntaDto);
     }
 
     @PatchMapping("/desverificar/{id}")
-    public ResponseEntity<Pregunta> desverificarPregunta(@PathVariable Long id) {
+    public ResponseEntity<PreguntaDto> desverificarPregunta(@PathVariable Long id) {
         // Buscar la pregunta existente por su ID
         Pregunta preguntaExistente = aplicacionPregunta.getPregunta(id);
 
@@ -100,11 +118,14 @@ public class PreguntaController {
         preguntaExistente.setVerificado(false);
 
         aplicacionPregunta.insertPregunta(preguntaExistente);
-        return ResponseEntity.ok(preguntaExistente);
+
+        PreguntaDto preguntaDto = preguntaDtoConverter.convertToPreguntaDto(preguntaExistente);
+
+        return ResponseEntity.ok(preguntaDto);
     }
 
     @PutMapping("/actualizar/{id}")
-    public ResponseEntity<Pregunta> actualizarPregunta(@PathVariable Long id, @RequestBody PreguntaDto preguntaDto) {
+    public ResponseEntity<PreguntaDto> actualizarPregunta(@PathVariable Long id, @RequestBody PreguntaDto preguntaDto) {
         // Buscar la pregunta existente por su ID
         Pregunta preguntaExistente = aplicacionPregunta.getPregunta(id);
 
@@ -121,7 +142,9 @@ public class PreguntaController {
         preguntaExistente.setCategoria(aplicacionCategorias.getCategoriaByName(preguntaDto.getCategoria()));
 
         aplicacionPregunta.insertPregunta(preguntaExistente);
-        return ResponseEntity.ok(preguntaExistente);
+
+        PreguntaDto returnPreguntaDto = preguntaDtoConverter.convertToPreguntaDto(preguntaExistente);
+        return ResponseEntity.ok(returnPreguntaDto);
     }
 
     @DeleteMapping("/eliminar/{id}")
@@ -156,6 +179,14 @@ public class PreguntaController {
     public ResponseEntity<PreguntaDto> getPregunta(@PathVariable Long id) {
         Pregunta pregunta = aplicacionPregunta.getPregunta(id);
         PreguntaDto preguntaDto = preguntaDtoConverter.convertToPreguntaDto(pregunta);
+
+        List<Respuesta> listaRespuestas = aplicacionRespuestas.getRespuestasByPreguntaId(id);
+
+        List<RespuestaDto> listaRespuestasDto = listaRespuestas.stream()
+                .map(respuesta -> respuestaDtoConverter.convertToRespuestaDto(respuesta))
+                .toList();
+
+        preguntaDto.setRespuestas(listaRespuestasDto);
         if (pregunta != null) {
             return ResponseEntity.ok(preguntaDto);
         } else {
