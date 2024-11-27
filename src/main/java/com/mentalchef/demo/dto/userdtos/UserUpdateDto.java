@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class UserGetDto {
-    private Long id;
+public class UserUpdateDto {
     private String username;
     private String email;
-    private String role;
+    private String password;
     private int monedaV;
+
 }

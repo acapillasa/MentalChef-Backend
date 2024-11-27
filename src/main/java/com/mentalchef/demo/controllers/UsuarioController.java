@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ import com.mentalchef.demo.aplicacion.impl.AplicacionUsuarios;
 import com.mentalchef.demo.dto.userdtos.LoginDto;
 import com.mentalchef.demo.dto.userdtos.UserGetDto;
 import com.mentalchef.demo.dto.userdtos.UserRegisterDto;
+import com.mentalchef.demo.dto.userdtos.UserUpdateDto;
 import com.mentalchef.demo.modelos.Chef;
 import com.mentalchef.demo.modelos.Pinche;
 import com.mentalchef.demo.modelos.Usuario;
@@ -47,9 +49,13 @@ public class UsuarioController {
     @Autowired
     private AplicacionUsuarios aplicacionUsuarios;
 
-    AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-    JwtTokenProvider tokenProvider;
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("")
     public List<Usuario> getUsuarios() {
@@ -82,26 +88,52 @@ public class UsuarioController {
     }
 
     @PutMapping("/actualizar/{id}")
-    public ResponseEntity<String> putMethodName(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
+    public ResponseEntity<UserGetDto> actualizarUsuario(@PathVariable Long id, @RequestBody UserUpdateDto usuarioActualizado) {
         Usuario usuario = aplicacionUsuarios.getUsuario(id);
 
         // Verifica si el usuario existe
         if (usuario == null) {
-            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        // Verifica si la contraseña es adecuada si no está vacía
+        if (usuarioActualizado.getPassword() != null && !usuarioActualizado.getPassword().isEmpty()) {
+            if (!esContrasenaAdecuada(usuarioActualizado.getPassword())) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            usuario.setPassword(passwordEncoder.encode(usuarioActualizado.getPassword()));
         }
 
         // Actualiza los campos del usuario con los datos del cuerpo de la solicitud
         usuario.setUsername(usuarioActualizado.getUsername());
         usuario.setMonedaV(usuarioActualizado.getMonedaV());
         usuario.setEmail(usuarioActualizado.getEmail());
-        usuario.setDescripcion(usuarioActualizado.getDescripcion());
-        usuario.setPassword(usuarioActualizado.getPassword());
         // Puedes agregar más campos si es necesario
 
         // Llama a la lógica para actualizar el usuario en la base de datos
         aplicacionUsuarios.updateUsuario(usuario);
 
-        return new ResponseEntity<>("Pinche actualizado exitosamente", HttpStatus.OK);
+        UserGetDto userDto = new UserGetDto();
+        userDto.setUsername(usuario.getUsername());
+        userDto.setEmail(usuario.getEmail());
+        userDto.setMonedaV(usuario.getMonedaV());
+
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
+    }
+
+    private boolean esContrasenaAdecuada(String contrasena) {
+        // Ejemplo de validación: longitud mínima de 8 caracteres
+        if (contrasena == null || contrasena.length() < 8) {
+            return false;
+        }
+        // Validación de al menos un carácter especial
+        String specialCharacters = "!@#$%^&*()-+";
+        boolean hasSpecialCharacter = contrasena.chars().anyMatch(ch -> specialCharacters.indexOf(ch) >= 0);
+        if (!hasSpecialCharacter) {
+            return false;
+        }
+        // Puedes agregar más validaciones aquí (por ejemplo, mayúsculas, números, etc.)
+        return true;
     }
 
     @GetMapping("/insertarPrueba")
@@ -118,10 +150,26 @@ public class UsuarioController {
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getMethodName(@AuthenticationPrincipal UserDetails userDetails) {
-        System.out.println("Authenticated user: " + userDetails.getUsername());
+        if (userDetails == null) {
+            System.out.println("Authenticated user is null");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        // Cargar el usuario completo desde la base de datos utilizando el nombre de usuario
+        Usuario usuario = aplicacionUsuarios.buscarPorNombre(userDetails.getUsername());
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        // Crear el DTO del usuario
         UserGetDto userDto = new UserGetDto();
-        userDto.setUsername(userDetails.getUsername());
+        userDto.setId(usuario.getId());
+        userDto.setUsername(usuario.getUsername());
+        userDto.setEmail(usuario.getEmail());
+        userDto.setMonedaV(usuario.getMonedaV());
         userDto.setRole(userDetails.getAuthorities().stream().findFirst().get().getAuthority());
+
+        System.out.println("Authenticated user: " + userDetails.getUsername());
         return ResponseEntity.ok(userDto);
     }
 
