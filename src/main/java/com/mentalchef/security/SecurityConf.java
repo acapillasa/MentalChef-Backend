@@ -40,11 +40,18 @@ public class SecurityConf {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(requests -> requests
-                .requestMatchers("/usuarios/login", "/usuarios/logout", "/usuarios/registrar", "/usuarios/registrarChef", "/swagger-ui/**").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/usuarios/login", "/usuarios/logout", "/usuarios/registrar").permitAll()
+                .requestMatchers("preguntas/alAzar").permitAll()
+                .requestMatchers("/respuestas/preguntaId/{id}").permitAll()
+                .requestMatchers("/images/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
 
                 .requestMatchers("/usuarios/monedasV", "/usuarios/me").authenticated()
-                .requestMatchers("/categorias/categoriasConEvento", "/categorias/categoriasSinEvento", "/preguntas/diaria").authenticated()
+                .requestMatchers("/categorias/categoriasConEvento", "/categorias/categoriasSinEvento").authenticated()
+                .requestMatchers("/preguntas/diaria").authenticated()
+
+                .requestMatchers("/usuarios/registrarChef").hasRole("ADMIN")
 
                 .anyRequest().authenticated())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
