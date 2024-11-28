@@ -39,6 +39,8 @@ import com.mentalchef.security.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import jakarta.annotation.security.PermitAll;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @AllArgsConstructor
 @RestController
@@ -86,6 +88,13 @@ public class UsuarioController {
                 .map(user -> ResponseEntity.status(HttpStatus.CREATED).body(user))
                 .orElseGet(() -> ResponseEntity.badRequest().body(null));
     }
+
+    @GetMapping("/nombre/{nombre}")
+    public ResponseEntity<Boolean> comprobarNombre(@PathVariable String nombre) {
+        Usuario usuario = aplicacionUsuarios.buscarPorNombre(nombre);
+        return ResponseEntity.ok(usuario != null ? true : false);
+    }
+    
 
     @PutMapping("/actualizar/{id}")
     public ResponseEntity<UserGetDto> actualizarUsuario(@PathVariable Long id, @RequestBody UserUpdateDto usuarioActualizado) {
