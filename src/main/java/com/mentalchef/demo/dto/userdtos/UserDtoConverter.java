@@ -42,4 +42,12 @@ public class UserDtoConverter {
         return UserGetDto.builder().username(usuario.getUsername()).email(usuario.getEmail())
                 .role(usuario.getRoles().toString()).build();
     }
+
+    public Usuario toUsuario(UserGetDto usuarioDto) {
+        Usuario usuario = new Usuario();
+        usuario.setUsername(usuarioDto.getUsername());
+        usuario.setEmail(usuarioDto.getEmail());
+        usuario.setMonedaV(usuarioDto.getMonedaV());
+        return usuario;
+    }
 }

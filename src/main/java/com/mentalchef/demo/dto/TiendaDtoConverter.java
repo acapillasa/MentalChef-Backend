@@ -6,13 +6,15 @@ import com.mentalchef.demo.modelos.Tienda;
 
 @Component
 public class TiendaDtoConverter {
-    public static TiendaDto convertToTiendaDto(TiendaDto tiendaDto) {
+    public static TiendaDto convertToTiendaDto(Tienda tienda) {
 
-        TiendaDto TiendaDto = new TiendaDto();
-        TiendaDto.setId(tiendaDto.getId());
-        TiendaDto.setNombre(tiendaDto.getNombre());
-        TiendaDto.setDescripcion(tiendaDto.getDescripcion());
-        TiendaDto.setCoste(tiendaDto.getCoste());
+        TiendaDto tiendaDto = new TiendaDto();
+        tiendaDto.setId(tienda.getId());
+        tiendaDto.setNombre(tienda.getNombre());
+        tiendaDto.setDescripcion(tienda.getDescripcion());
+        tiendaDto.setCoste(tienda.getCoste());
+        tiendaDto.setCosteV(tienda.getCosteV());
+        tiendaDto.setImagen(tienda.getImagen());
 
         return tiendaDto;
     }
@@ -23,6 +25,8 @@ public class TiendaDtoConverter {
         tienda.setNombre(tiendaDto.getNombre());
         tienda.setDescripcion(tiendaDto.getDescripcion());
         tienda.setCoste(tiendaDto.getCoste());
+        tienda.setCosteV(tiendaDto.getCosteV());
+        tienda.setImagen(tiendaDto.getImagen());
 
         return tienda;
     }

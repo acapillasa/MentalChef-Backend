@@ -29,6 +29,12 @@ public class Tienda {
     @Column(name = "coste")
     private double coste;
 
+    @Column(name = "costeV")
+    private double costeV;
+
+    @Column(name = "imagen")
+    private String imagen;
+
     @OneToMany(mappedBy = "id.tienda", cascade = CascadeType.ALL)
     private List<Compra> compras;
 
@@ -38,9 +44,12 @@ public class Tienda {
         this.coste = coste;
     }
 
-
-
-
+    public Tienda(String nombre, String descripcion, double coste, double costeV) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.coste = coste;
+        this.costeV = costeV;
+    }
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

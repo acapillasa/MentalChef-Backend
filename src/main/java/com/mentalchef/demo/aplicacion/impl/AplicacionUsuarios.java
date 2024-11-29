@@ -3,6 +3,8 @@ package com.mentalchef.demo.aplicacion.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +16,6 @@ import com.mentalchef.demo.modelos.Usuario;
 import com.mentalchef.demo.persistencia.IPersistencia;
 
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @AllArgsConstructor
 @Service
@@ -130,6 +130,17 @@ public class AplicacionUsuarios implements IAplicacionUsuarios {
         } catch (Exception e) {
             logger.error("Error al actualizar el usuario: {}", usuario.getUsername(), e);
             return "Error al actualizar el usuario";
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Usuario buscarPorNombreConCompras(String username) {
+        try {
+            return persistencia.buscarPorNombreConCompras(username);
+        } catch (Exception e) {
+            logger.error("Error al buscar usuario con compras: {}", username, e);
+            return null;
         }
     }
 }

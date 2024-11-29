@@ -2,6 +2,10 @@ package com.mentalchef.demo.aplicacion;
 
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.mentalchef.demo.modelos.Compra;
 import com.mentalchef.demo.modelos.Tienda;
 
 public interface IAplicacionTienda {
@@ -17,4 +21,8 @@ public interface IAplicacionTienda {
     public void deleteProductoById(Long id);
 
     public Tienda getProdcutoByName(String Tienda);
+
+    public boolean comprarProducto(Long id, @AuthenticationPrincipal UserDetails userDetails);
+
+    public List<Compra> getHistorialCompras(String username);
 }

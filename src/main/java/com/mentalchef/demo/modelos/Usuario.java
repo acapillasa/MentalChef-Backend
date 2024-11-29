@@ -61,9 +61,9 @@ public class Usuario implements UserDetails {
     private String password;
 
     @Column(name = "monedaV")
-    private int monedaV;
+    private double monedaV;
 
-    @OneToMany(mappedBy = "id.usuario", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id.usuario", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Compra> compras;
 
     public Usuario(String username, String descripcion, String email, String password, int monedaV) {
@@ -72,6 +72,7 @@ public class Usuario implements UserDetails {
         this.email = email;
         this.password = password;
         this.monedaV = monedaV;
+        this.compras = List.of();
     }
 
     @CreationTimestamp

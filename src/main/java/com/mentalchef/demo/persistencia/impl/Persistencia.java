@@ -11,6 +11,7 @@ import com.mentalchef.demo.modelos.Categoria;
 import com.mentalchef.demo.modelos.Comentario;
 import com.mentalchef.demo.modelos.Pregunta;
 import com.mentalchef.demo.modelos.Respuesta;
+import com.mentalchef.demo.modelos.Usuario;
 import com.mentalchef.demo.persistencia.IPersistencia;
 
 import lombok.AllArgsConstructor;
@@ -468,5 +469,28 @@ public class Persistencia<T> implements IPersistencia<T> {
                 e.printStackTrace();
                 return null;
             }
+    }
+
+    @Override
+    public Usuario buscarPorNombreConCompras(String username) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            String hql = "SELECT u FROM Usuario u LEFT JOIN FETCH u.compras WHERE u.username = :username";
+            Usuario usuario = session.createQuery(hql, Usuario.class)
+                    .setParameter("username", username)
+                    .uniqueResult();
+            session.getTransaction().commit();
+            session.close();
+            return usuario;
+        } catch (Exception e) {
+            if (session != null) {
+                session.getTransaction().rollback();
+                session.close();
+            }
+            e.printStackTrace();
+            return null;
+        }
     }
 }

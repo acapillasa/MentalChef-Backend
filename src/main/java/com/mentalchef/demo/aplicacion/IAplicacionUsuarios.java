@@ -16,6 +16,8 @@ public interface IAplicacionUsuarios {
 
     public Usuario buscarPorNombre(String nombre);
 
+    Usuario buscarPorNombreConCompras(String username);
+
     public Optional<UserGetDto> guardarPinche(UserRegisterDto userRegisterDto);
 
     public Optional<UserGetDto> guardarChef(UserRegisterDto userRegisterDto);

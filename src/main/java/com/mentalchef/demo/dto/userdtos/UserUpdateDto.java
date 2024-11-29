@@ -13,6 +13,6 @@ public class UserUpdateDto {
     private String username;
     private String email;
     private String password;
-    private int monedaV;
+    private double monedaV;
 
 }

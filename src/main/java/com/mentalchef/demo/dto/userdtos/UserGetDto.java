@@ -14,5 +14,5 @@ public class UserGetDto {
     private String username;
     private String email;
     private String role;
-    private int monedaV;
+    private double monedaV;
 }

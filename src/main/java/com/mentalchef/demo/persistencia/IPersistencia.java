@@ -6,6 +6,7 @@ import com.mentalchef.demo.modelos.Categoria;
 import com.mentalchef.demo.modelos.Comentario;
 import com.mentalchef.demo.modelos.Pregunta;
 import com.mentalchef.demo.modelos.Respuesta;
+import com.mentalchef.demo.modelos.Usuario;
 
 public interface IPersistencia<T> {
 
@@ -42,5 +43,7 @@ public interface IPersistencia<T> {
     public boolean eliminarPreguntaPorId(Long preguntaId);
 
     public List<Respuesta> obtenerRespuestasDePregunta(Long id);
+
+    public Usuario buscarPorNombreConCompras(String username);
 
 }

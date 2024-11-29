@@ -11,11 +11,15 @@ public class TiendaDto {
     private Long id;
     private String nombre;
     private String descripcion;
-    private Long coste;
+    private double coste;
+    private double costeV;
+    private String imagen;
 
-    public TiendaDto(String nombre, String descripcion, Long coste) {
+    public TiendaDto(String nombre, String descripcion, double coste, double costeV, String imagen) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.coste = coste;
+        this.costeV = costeV;
+        this.imagen = imagen;
     }
 }
