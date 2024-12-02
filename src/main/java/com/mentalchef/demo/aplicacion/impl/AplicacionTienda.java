@@ -2,22 +2,23 @@ package com.mentalchef.demo.aplicacion.impl;
 
 import java.util.List;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.mentalchef.demo.aplicacion.IAplicacionTienda;
 import com.mentalchef.demo.aplicacion.IAplicacionUsuarios;
 import com.mentalchef.demo.modelos.Compra;
 import com.mentalchef.demo.modelos.CompraId;
-import com.mentalchef.demo.modelos.Respuesta;
 import com.mentalchef.demo.modelos.Tienda;
 import com.mentalchef.demo.modelos.Usuario;
 import com.mentalchef.demo.persistencia.IPersistencia;
 
 import lombok.AllArgsConstructor;
-
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
@@ -44,6 +45,13 @@ public class AplicacionTienda implements IAplicacionTienda {
     }
 
     @Override
+    public void insertCompra(Compra compra) {
+        Tienda producto = persistencia.obtener(compra.getId().getTienda().getId());
+        producto.getCompras().add(compra);
+        persistencia.guardar(producto);
+    }
+
+    @Override
     public List<Tienda> getListProdcutoByName(@RequestParam String nombreTienda) {
         return persistencia.obtenerPorNombre(nombreTienda);
     }
@@ -61,26 +69,25 @@ public class AplicacionTienda implements IAplicacionTienda {
     @Override
     @Transactional
     public boolean comprarProducto(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
-
         Usuario usuario = aplicacionUsuarios.buscarPorNombre(userDetails.getUsername());
-
         Tienda tienda = persistencia.obtener(id);
 
-
-        System.out.println("Tienda "+ tienda.getCosteV() +" Usuario: " + usuario.getMonedaV());
-        if (tienda.getCosteV() < usuario.getMonedaV()) {
+        if (tienda.getCosteV() > usuario.getMonedaV()) {
             return false;
         }
 
         usuario.setMonedaV(usuario.getMonedaV() - tienda.getCosteV());
-        Compra compra = new Compra(new CompraId(usuario, tienda), 1);
-        usuario.getCompras().add(compra);
+
+        // Create a new purchase record each time a product is bought
+        Compra nuevaCompra = new Compra(new CompraId(usuario, tienda));
+        usuario.getCompras().add(nuevaCompra);
+        tienda.getCompras().add(nuevaCompra);
+
         aplicacionUsuarios.insertUsuario(usuario);
-        
-        // Save the Compra entity
         persistencia.guardar(tienda);
-        
-        System.out.println(usuario.getCompras());
+
+        // Print success message after successful transaction
+        System.out.println("Despues de la compra, producto" + tienda.getCosteV() + " Usuario moneditas: " + usuario.getMonedaV());
         return true;
     }
 
@@ -92,5 +99,5 @@ public class AplicacionTienda implements IAplicacionTienda {
         usuario = aplicacionUsuarios.buscarPorNombreConCompras(username);
         return usuario.getCompras();
     }
-    
+
 }

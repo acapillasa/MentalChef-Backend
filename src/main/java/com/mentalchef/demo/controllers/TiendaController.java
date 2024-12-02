@@ -71,12 +71,12 @@ public class TiendaController {
     }
 
     @PostMapping("/comprar/{id}")
-    public String comprarProducto(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<String> comprarProducto(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         boolean success = aplicacionTienda.comprarProducto(id, userDetails);
-        if (success) {
-            return "Compra realizada con éxito.";
+        if (success == true) {
+            return ResponseEntity.ok("Compra realizada con éxito.");
         } else {
-            return "Error al realizar la compra.";
+            return ResponseEntity.ok("Error al realizar la compra, no tienes puntos suficientes.");
         }
     }
 

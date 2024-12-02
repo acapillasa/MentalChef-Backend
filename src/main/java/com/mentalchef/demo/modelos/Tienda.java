@@ -35,7 +35,7 @@ public class Tienda {
     @Column(name = "imagen")
     private String imagen;
 
-    @OneToMany(mappedBy = "id.tienda", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id.tienda", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Compra> compras;
 
     public Tienda(String nombre, String descripcion, double coste) {
@@ -60,4 +60,13 @@ public class Tienda {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fechaactualizacion")
     private Date fechaActualizacion;
+
+    @Override
+    public String toString() {
+        return "Tienda{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", costeV=" + costeV +
+                '}';
+    }
 }

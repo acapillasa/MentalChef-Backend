@@ -15,7 +15,6 @@ public class CompraDtoConverter {
     public CompraDto convertToCompraDto(Compra compra) {
         CompraDto compraDto = new CompraDto();
         compraDto.setId(new CompraIdDto(compraIdDtoConverter.convertToCompraIdDto(compra.getId())));
-        compraDto.setCantidad(compra.getCantidad());
         compraDto.setFechaCompra(compra.getFechaCompra());
         return compraDto;
     }
@@ -26,7 +25,6 @@ public class CompraDtoConverter {
         compraId.setUsuario(userDtoConverter.toUsuario(compraDto.getId().getUsuario()));
         compraId.setTienda(tiendaDtoConverter.convertToTienda(compraDto.getId().getTienda()));
         compra.setId(compraId);
-        compra.setCantidad(compraDto.getCantidad());
         compra.setFechaCompra(compraDto.getFechaCompra());
         return compra;
     }

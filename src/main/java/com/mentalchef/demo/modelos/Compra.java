@@ -15,23 +15,26 @@ public class Compra {
     @EmbeddedId
     private CompraId id;
 
-    @Column(name = "cantidad", nullable = false)
-    private int cantidad;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fecha_compra", nullable = false)
     private Date fechaCompra;
 
-    public Compra(CompraId id, int cantidad) {
+    public Compra(CompraId id) {
         this.id = id;
-        this.cantidad = cantidad;
         this.fechaCompra = new Date();  // Se establece la fecha de compra en el momento de la creación
     }
 
     // Constructor alternativo si deseas personalizar la fecha
-    public Compra(CompraId id, int cantidad, Date fechaCompra) {
+    public Compra(CompraId id, Date fechaCompra) {
         this.id = id;
-        this.cantidad = cantidad;
         this.fechaCompra = fechaCompra;
+    }
+
+    @Override
+    public String toString() {
+        return "Compra{" +
+                "compraId=" + id +
+                ", fechaCompra=" + fechaCompra +
+                '}';
     }
 }

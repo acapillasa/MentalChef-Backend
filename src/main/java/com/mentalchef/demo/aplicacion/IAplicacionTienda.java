@@ -25,4 +25,6 @@ public interface IAplicacionTienda {
     public boolean comprarProducto(Long id, @AuthenticationPrincipal UserDetails userDetails);
 
     public List<Compra> getHistorialCompras(String username);
+
+    public void insertCompra(Compra compra);
 }
