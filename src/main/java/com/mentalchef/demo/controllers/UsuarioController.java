@@ -36,10 +36,9 @@ import com.mentalchef.demo.modelos.Pinche;
 import com.mentalchef.demo.modelos.Usuario;
 import com.mentalchef.security.jwt.JwtTokenProvider;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-import jakarta.annotation.security.PermitAll;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @AllArgsConstructor
@@ -197,6 +196,16 @@ public class UsuarioController {
         System.out.println("Authenticated user: " + usuario.getUsername());
         return ResponseEntity.ok(usuario.getMonedaV());
     }
+
+    @PostMapping("/monedasV/preguntaDiaria")
+    public void postMethodName(@AuthenticationPrincipal UserDetails userDetails) {
+        Usuario usuario = aplicacionUsuarios.buscarPorNombre(userDetails.getUsername());
+
+        usuario.setMonedaV(usuario.getMonedaV() + 5);
+        
+        aplicacionUsuarios.insertUsuario(usuario);
+    }
+    
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginDto loginDto, HttpServletResponse response) {
