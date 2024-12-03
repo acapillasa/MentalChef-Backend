@@ -1,15 +1,21 @@
 package com.mentalchef.demo.dto;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.mentalchef.demo.dto.userdtos.UserDtoConverter;
 import com.mentalchef.demo.modelos.Compra;
 import com.mentalchef.demo.modelos.CompraId;
 
+@Component
 public class CompraDtoConverter {
 
+    @Autowired
     CompraIdDtoConverter compraIdDtoConverter;
 
     UserDtoConverter userDtoConverter;
 
+    @Autowired
     TiendaDtoConverter tiendaDtoConverter;
     
     public CompraDto convertToCompraDto(Compra compra) {

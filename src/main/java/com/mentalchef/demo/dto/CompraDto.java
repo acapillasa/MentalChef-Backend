@@ -11,10 +11,9 @@ public class CompraDto {
 
     private CompraIdDto id;
     private Date fechaCompra;
-
-    public CompraDto(CompraIdDto id, int cantidad) {
+    public CompraDto(CompraIdDto id) {
         this.id = id;
-        this.fechaCompra = new Date();  // Se establece la fecha de compra en el momento de la creación
+        this.fechaCompra = new Date();
     }
 
 }

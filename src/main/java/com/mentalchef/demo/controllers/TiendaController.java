@@ -23,6 +23,9 @@ import com.mentalchef.demo.dto.TiendaDto;
 import com.mentalchef.demo.dto.TiendaDtoConverter;
 import com.mentalchef.demo.modelos.Compra;
 import com.mentalchef.demo.modelos.Tienda;
+import com.mentalchef.demo.dto.userdtos.UserDtoConverter;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @RestController
 @RequestMapping("/tienda")
@@ -34,9 +37,15 @@ public class TiendaController {
     @Autowired
     TiendaDtoConverter tiendaDtoConverter;
 
+    @Autowired
     IAplicacionUsuarios aplicacionUsuarios;
 
+    @Autowired
     CompraDtoConverter compraDtoConverter;
+
+    @Autowired
+    @Qualifier("userDtoConverter")
+    UserDtoConverter usuarioDtoConverter;
 
     @GetMapping("/productos")
     public ResponseEntity<List<TiendaDto>> getProductos() {

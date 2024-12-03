@@ -24,6 +24,7 @@ public class AplicacionUsuarios implements IAplicacionUsuarios {
     private static final Logger logger = LoggerFactory.getLogger(AplicacionUsuarios.class);
 
     private final IPersistencia<Usuario> persistencia;
+
     private final UserDtoConverter userDtoConverter;
 
     @Override

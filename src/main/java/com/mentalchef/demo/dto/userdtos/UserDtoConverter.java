@@ -3,7 +3,6 @@ package com.mentalchef.demo.dto.userdtos;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +12,10 @@ import com.mentalchef.demo.modelos.Usuario;
 import com.mentalchef.demo.modelos.usuario.UserRoles;
 
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Component
 public class UserDtoConverter {
 
