@@ -6,6 +6,7 @@ import lombok.Data;
 public class CategoriaDto {
 
     private String categoria;
+    private String descripcion;
 
 }
 

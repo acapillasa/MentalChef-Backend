@@ -58,8 +58,8 @@ public class AplicacionCategorias implements IAplicacionCategorias {
     }
 
     @Override
-    public void deleteCategoriaById(int id) {
-        persistencia.eliminar(persistencia.obtener(id));
+    public void deleteCategoriaByCategoria(String categoria) {
+        persistencia.eliminar(persistencia.query("categoria",categoria).get(0));
     }
 
     @Override

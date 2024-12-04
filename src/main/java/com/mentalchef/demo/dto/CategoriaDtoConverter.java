@@ -11,6 +11,7 @@ public class CategoriaDtoConverter {
         CategoriaDto categoriaDto = new CategoriaDto();
 
         categoriaDto.setCategoria(categoria.getCategoria());
+        categoriaDto.setDescripcion(categoria.getDescripcion());
 
         return categoriaDto;
     }
@@ -19,6 +20,7 @@ public class CategoriaDtoConverter {
         Categoria categoria = new Categoria();
 
         categoria.setCategoria(categoriaDto.getCategoria());
+        categoria.setDescripcion(categoriaDto.getDescripcion());
 
         return categoria;
     }
