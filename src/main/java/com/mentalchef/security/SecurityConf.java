@@ -48,9 +48,8 @@ public class SecurityConf {
 
 
                 .requestMatchers("/usuarios/monedasV", "/usuarios/me").authenticated()
-                .requestMatchers("/categorias/categoriasConEvento", "/categorias/categoriasSinEvento").authenticated()
+                .requestMatchers("/categorias/**").authenticated()
                 .requestMatchers("/preguntas/diaria").authenticated()
-
                 .requestMatchers("/usuarios/registrarChef").hasRole("ADMIN")
 
                 .anyRequest().authenticated())

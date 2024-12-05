@@ -446,6 +446,34 @@ public class Persistencia<T> implements IPersistencia<T> {
     }
 
     @Override
+    public boolean eliminarCategoriaPorCategoria(String categoriaNombre) {
+
+        Session session = null;
+
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            Categoria categoria = session.get(Categoria.class, categoriaNombre);
+            if (categoria == null) {
+                System.out.println("No se encontró la categoria: " + categoria);
+                return false;
+            }
+            session.remove(categoria);
+            session.getTransaction().commit();
+            session.close();
+            return true;
+        } catch (Exception e) {
+            if (session != null) {
+                session.getTransaction().rollback();
+                session.close();
+                
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
     public List<Respuesta> obtenerRespuestasDePregunta(Long id) {
             
             Session session = null;

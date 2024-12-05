@@ -59,12 +59,35 @@ public class AplicacionCategorias implements IAplicacionCategorias {
 
     @Override
     public void deleteCategoriaByCategoria(String categoria) {
-        persistencia.eliminar(persistencia.query("categoria",categoria).get(0));
+        try {
+            persistencia.eliminarCategoriaPorCategoria(categoria);
+        } catch (Exception e) {
+            System.err.println("Error al eliminar la categoría: " + categoria + " - " + e.getMessage());
+        }
     }
 
     @Override
     public Categoria getCategoriaByName(String categoria) {
         return persistencia.obtenerCategoriaPorNombre(categoria);
+    }
+
+    @Override
+    public String updateCategoria(Categoria categoria) {
+        try {
+            Categoria existingCategoria = persistencia.obtenerCategoriaPorNombre(categoria.getCategoria());
+            if (existingCategoria != null) {
+                existingCategoria.setCategoria(categoria.getCategoria());
+                existingCategoria.setDescripcion(categoria.getDescripcion());
+                
+                persistencia.guardar(existingCategoria);
+                return "Categoría actualizada con éxito";
+            } else {
+                return "Categoría no encontrada";
+            }
+        } catch (Exception e) {
+            System.err.println("Error al actualizar la categoría: " + e.getMessage());
+            return "Error al actualizar la categoría: " + e.getMessage();
+        }
     }
 
 }

@@ -14,6 +14,8 @@ public interface IAplicacionCategorias {
 
     public List<Categoria> getListCategoriaByName(String categoria);
 
+    public String updateCategoria(Categoria categoria);
+
     public void deleteCategoriaByCategoria(String categoria);
 
     public Categoria getCategoriaByName(String categoria);
