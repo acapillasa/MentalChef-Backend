@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.mentalchef.demo.modelos.Categoria;
 import com.mentalchef.demo.modelos.Comentario;
 import com.mentalchef.demo.modelos.Pregunta;
+import com.mentalchef.demo.modelos.Progreso;
 import com.mentalchef.demo.modelos.Respuesta;
 import com.mentalchef.demo.modelos.Usuario;
 import com.mentalchef.demo.persistencia.IPersistencia;
@@ -512,6 +513,29 @@ public class Persistencia<T> implements IPersistencia<T> {
             session.getTransaction().commit();
             session.close();
             return usuario;
+        } catch (Exception e) {
+            if (session != null) {
+                session.getTransaction().rollback();
+                session.close();
+            }
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Progreso> obtenerProgresosMes() {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            String hql = "FROM Progreso p WHERE "
+                    + "MONTH(p.fechaRespuesta) = MONTH(CURRENT_DATE()) AND "
+                    + "YEAR(p.fechaRespuesta) = YEAR(CURRENT_DATE())";
+            List<Progreso> progresos = session.createQuery(hql, Progreso.class).getResultList();
+            session.getTransaction().commit();
+            session.close();
+            return progresos;
         } catch (Exception e) {
             if (session != null) {
                 session.getTransaction().rollback();

@@ -1,7 +1,9 @@
 package com.mentalchef.demo.controllers;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -27,12 +29,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mentalchef.demo.aplicacion.impl.AplicacionUsuarios;
+import com.mentalchef.demo.aplicacion.impl.AplicacionPregunta;
+import com.mentalchef.demo.aplicacion.impl.AplicacionProgreso;
+import com.mentalchef.demo.dto.ProgresoDto;
 import com.mentalchef.demo.dto.userdtos.LoginDto;
 import com.mentalchef.demo.dto.userdtos.UserGetDto;
 import com.mentalchef.demo.dto.userdtos.UserRegisterDto;
 import com.mentalchef.demo.dto.userdtos.UserUpdateDto;
 import com.mentalchef.demo.modelos.Chef;
 import com.mentalchef.demo.modelos.Pinche;
+import com.mentalchef.demo.modelos.Progreso;
+import com.mentalchef.demo.modelos.ProgresoId;
 import com.mentalchef.demo.modelos.Usuario;
 import com.mentalchef.security.jwt.JwtTokenProvider;
 
@@ -49,6 +56,12 @@ public class UsuarioController {
 
     @Autowired
     private AplicacionUsuarios aplicacionUsuarios;
+
+    @Autowired
+    private AplicacionPregunta aplicacionPreguntas;
+
+    @Autowired
+    private AplicacionProgreso aplicacionProgreso;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -205,7 +218,38 @@ public class UsuarioController {
         
         aplicacionUsuarios.insertUsuario(usuario);
     }
-    
+
+    @GetMapping("/rankingDiarioList")
+    public ResponseEntity<List<ProgresoDto>> getRankingDiario() {
+        List<Progreso> progresos = aplicacionProgreso.getProgresosMes();
+        List<ProgresoDto> progresoDtos = progresos.stream().map(progreso -> {
+            ProgresoDto dto = new ProgresoDto();
+            dto.setUsuarioId(progreso.getId().getUsuario().getId());
+            dto.setUsuarioNombre(aplicacionUsuarios.getUsuario(progreso.getId().getUsuario().getId()).getUsername());
+            dto.setPreguntaId(progreso.getId().getPregunta().getId());
+            dto.setFechaRespuesta(progreso.getFechaRespuesta());
+            dto.setAcertado(progreso.isAcertado());
+            dto.setFechaCreacion(progreso.getFechaCreacion());
+            dto.setFechaActualizacion(progreso.getFechaActualizacion());
+            return dto;
+        }).toList();
+        return ResponseEntity.ok(progresoDtos);
+    }
+
+    @PostMapping("/rankingDiario")
+    public ResponseEntity<String> registrarPartidaDiaria(@AuthenticationPrincipal UserDetails userDetails, @RequestBody Map<String, Object> payload) {
+        Long preguntaId = Long.valueOf(payload.get("preguntaId").toString());
+        Boolean acerto = Boolean.valueOf(payload.get("acerto").toString());
+
+        // Log the received data
+        System.out.println("Received rankingDiario request: preguntaId=" + preguntaId + ", acerto=" + acerto);
+
+        Progreso progreso = new Progreso(new ProgresoId(aplicacionUsuarios.buscarPorNombre(userDetails.getUsername()), aplicacionPreguntas.getPregunta(preguntaId)), acerto, new Date());
+
+        aplicacionProgreso.insertProgreso(progreso);
+
+        return ResponseEntity.ok("Partida diaria registrada");
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginDto loginDto, HttpServletResponse response) {

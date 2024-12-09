@@ -41,6 +41,7 @@ public class SecurityConf {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/usuarios/login", "/usuarios/logout", "/usuarios/registrar").permitAll()
+                .requestMatchers("/usuarios/rankingDiarioList").permitAll()
                 .requestMatchers("preguntas/alAzar").permitAll()
                 .requestMatchers("/respuestas/preguntaId/{id}").permitAll()
                 .requestMatchers("/images/**").permitAll()
@@ -48,6 +49,7 @@ public class SecurityConf {
 
 
                 .requestMatchers("/usuarios/monedasV", "/usuarios/me").authenticated()
+                .requestMatchers("usuarios/rankingDiario").authenticated()
                 .requestMatchers("/categorias/**").authenticated()
                 .requestMatchers("/preguntas/diaria").authenticated()
                 .requestMatchers("/usuarios/registrarChef").hasRole("ADMIN")
