@@ -106,7 +106,7 @@ public class UsuarioController {
     @GetMapping("/nombre/{nombre}")
     public ResponseEntity<Boolean> comprobarNombre(@PathVariable String nombre) {
         Usuario usuario = aplicacionUsuarios.buscarPorNombre(nombre);
-        return ResponseEntity.ok(usuario != null ? true : false);
+        return ResponseEntity.ok(usuario == null ? true : false);
     }
     
 
@@ -213,10 +213,19 @@ public class UsuarioController {
     }
 
     @PostMapping("/monedasV/preguntaDiaria")
-    public void aumentarMonedasV(@AuthenticationPrincipal UserDetails userDetails) {
+    public void aumentarMonedasVPreguntaDiaria(@AuthenticationPrincipal UserDetails userDetails) {
         Usuario usuario = aplicacionUsuarios.buscarPorNombre(userDetails.getUsername());
 
         usuario.setMonedaV(usuario.getMonedaV() + 5);
+        
+        aplicacionUsuarios.insertUsuario(usuario);
+    }
+
+    @PostMapping("/monedasV/evento")
+    public void aumentarMonedasVEvento(@AuthenticationPrincipal UserDetails userDetails) {
+        Usuario usuario = aplicacionUsuarios.buscarPorNombre(userDetails.getUsername());
+
+        usuario.setMonedaV(usuario.getMonedaV() + 10);
         
         aplicacionUsuarios.insertUsuario(usuario);
     }
@@ -277,7 +286,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         try {
             // Log the login attempt
             System.out.println("Attempting to authenticate user: " + loginDto.getUsername() + " - " + loginDto.getPassword());

@@ -3,6 +3,7 @@ package com.mentalchef.demo.dto.userdtos;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Component
 public class UserDtoConverter {
 
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public Pinche toPinche(UserRegisterDto usuarioDTO) {
