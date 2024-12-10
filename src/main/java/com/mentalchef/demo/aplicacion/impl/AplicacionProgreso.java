@@ -23,6 +23,11 @@ public class AplicacionProgreso implements IAplicacionProgreso {
     }
 
     @Override
+    public List<Progreso> getProgresosUsuario(Long id) {
+        return persistencia.obtenerProgresosUsuario(id);
+    }
+
+    @Override
     public List<Progreso> getProgresos() {
         return persistencia.obtenerTodos();
     }

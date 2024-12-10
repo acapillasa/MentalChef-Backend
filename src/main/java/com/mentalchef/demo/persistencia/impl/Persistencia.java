@@ -545,4 +545,29 @@ public class Persistencia<T> implements IPersistencia<T> {
             return null;
         }
     }
+
+    @Override 
+    public List<Progreso> obtenerProgresosUsuario(Long id) {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            session.beginTransaction();
+            String hql = "FROM Progreso p WHERE p.id.usuario.id = :id AND "
+                    + "MONTH(p.fechaRespuesta) = MONTH(CURRENT_DATE()) AND "
+                    + "YEAR(p.fechaRespuesta) = YEAR(CURRENT_DATE())";
+            List<Progreso> progresos = session.createQuery(hql, Progreso.class)
+                    .setParameter("id", id)
+                    .getResultList();
+            session.getTransaction().commit();
+            session.close();
+            return progresos;
+        } catch (Exception e) {
+            if (session != null) {
+                session.getTransaction().rollback();
+                session.close();
+            }
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

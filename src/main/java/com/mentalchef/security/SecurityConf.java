@@ -42,14 +42,14 @@ public class SecurityConf {
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/usuarios/login", "/usuarios/logout", "/usuarios/registrar").permitAll()
                 .requestMatchers("/usuarios/rankingDiarioList").permitAll()
-                .requestMatchers("preguntas/alAzar").permitAll()
+                .requestMatchers("/preguntas/alAzar").permitAll()
                 .requestMatchers("/respuestas/preguntaId/{id}").permitAll()
                 .requestMatchers("/images/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
 
 
                 .requestMatchers("/usuarios/monedasV", "/usuarios/me").authenticated()
-                .requestMatchers("usuarios/rankingDiario").authenticated()
+                .requestMatchers("/usuarios/miRankingDiario").authenticated()
                 .requestMatchers("/categorias/**").authenticated()
                 .requestMatchers("/preguntas/diaria").authenticated()
                 .requestMatchers("/usuarios/registrarChef").hasRole("ADMIN")

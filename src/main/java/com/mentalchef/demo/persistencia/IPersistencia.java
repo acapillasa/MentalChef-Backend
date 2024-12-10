@@ -51,4 +51,6 @@ public interface IPersistencia<T> {
 
     public List<Progreso> obtenerProgresosMes();
 
+    public List<Progreso> obtenerProgresosUsuario(Long id);
+
 }

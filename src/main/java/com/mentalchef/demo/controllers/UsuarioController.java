@@ -46,6 +46,8 @@ import com.mentalchef.security.jwt.JwtTokenProvider;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @AllArgsConstructor
@@ -170,7 +172,7 @@ public class UsuarioController {
 
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<?> getMethodName(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
             System.out.println("Authenticated user is null");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
@@ -211,7 +213,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/monedasV/preguntaDiaria")
-    public void postMethodName(@AuthenticationPrincipal UserDetails userDetails) {
+    public void aumentarMonedasV(@AuthenticationPrincipal UserDetails userDetails) {
         Usuario usuario = aplicacionUsuarios.buscarPorNombre(userDetails.getUsername());
 
         usuario.setMonedaV(usuario.getMonedaV() + 5);
@@ -235,6 +237,29 @@ public class UsuarioController {
         }).toList();
         return ResponseEntity.ok(progresoDtos);
     }
+
+    @GetMapping("/miRankingDiario")
+    public ResponseEntity<List<ProgresoDto>> getMiRankingDiario(@AuthenticationPrincipal UserDetails userDetails) {
+        Usuario usuario = aplicacionUsuarios.buscarPorNombre(userDetails.getUsername());
+
+        List<Progreso> progresos = aplicacionProgreso.getProgresosUsuario(usuario.getId());
+
+        List<ProgresoDto> dto = progresos.stream().map(progreso -> {
+            ProgresoDto progresoDto = new ProgresoDto();
+            progresoDto.setUsuarioId(progreso.getId().getUsuario().getId());
+            progresoDto.setUsuarioNombre(aplicacionUsuarios.getUsuario(progreso.getId().getUsuario().getId()).getUsername());
+            progresoDto.setPreguntaId(progreso.getId().getPregunta().getId());
+            progresoDto.setFechaRespuesta(progreso.getFechaRespuesta());
+            progresoDto.setAcertado(progreso.isAcertado());
+            progresoDto.setFechaCreacion(progreso.getFechaCreacion());
+            progresoDto.setFechaActualizacion(progreso.getFechaActualizacion());
+            return progresoDto;
+        }).toList();
+
+        
+        return ResponseEntity.ok(dto);
+    }
+    
 
     @PostMapping("/rankingDiario")
     public ResponseEntity<String> registrarPartidaDiaria(@AuthenticationPrincipal UserDetails userDetails, @RequestBody Map<String, Object> payload) {
